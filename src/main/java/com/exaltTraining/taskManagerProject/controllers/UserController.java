@@ -2,8 +2,6 @@ package com.exaltTraining.taskManagerProject.controllers;
 
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +27,11 @@ public class UserController {
         }
         return "User registered successfully";
     }
+    @PostMapping("/login")
+    public String login(@RequestBody String email, String password) {
+
+        return "";
+    }
+
 
 }

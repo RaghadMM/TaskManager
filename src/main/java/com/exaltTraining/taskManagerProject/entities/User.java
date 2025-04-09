@@ -1,7 +1,6 @@
 package com.exaltTraining.taskManagerProject.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 
 @Entity
@@ -28,11 +27,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Role role;
+    private Role role=Role.EMPLOYEE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Status status;
+    private Status status=Status.Available;
 
     public User() {
     }
