@@ -39,21 +39,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean login(String email, String password) {
 
-        System.out.println(email);
-        System.out.println("pass"+password);
         List<User> users=userRepository.findAll();
         for(User user:users) {
-            System.out.println(user.getEmail());
-            System.out.println(user.getPassword());
-            System.out.println(bCryptPasswordEncoder.encode(password));
             if(user.getEmail().equals(email) && bCryptPasswordEncoder.matches(password,user.getPassword())) {
-
                 return true;
             }
         }
         System.out.println("User not found");
         return false; // or throw custom exception
-
-
     }
 }

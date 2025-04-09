@@ -30,12 +30,12 @@ public class UserController {
     }
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest loginRequest) {
-        //LoginRequest loginRequest = new LoginRequest(email, password)
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
         Boolean authenticated =userService.login(email,password);
         if(authenticated){
             return "User logged in successfully";
+
         }
         else{
             return "User is not authenticated";
