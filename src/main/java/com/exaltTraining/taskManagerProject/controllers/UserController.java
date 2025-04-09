@@ -1,5 +1,6 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
+import com.exaltTraining.taskManagerProject.entities.LoginRequest;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +29,17 @@ public class UserController {
         return "User registered successfully";
     }
     @PostMapping("/login")
-    public String login(@RequestBody String email, String password) {
-
-        return "";
+    public String login(@RequestBody LoginRequest loginRequest) {
+        //LoginRequest loginRequest = new LoginRequest(email, password)
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
+        Boolean authenticated =userService.login(email,password);
+        if(authenticated){
+            return "User logged in successfully";
+        }
+        else{
+            return "User is not authenticated";
+        }
     }
 
 
