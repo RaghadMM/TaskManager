@@ -17,12 +17,24 @@ public class Team {
     @JoinColumn(name="department_id")
     private Department department;
 
+    @OneToOne
+    @JoinColumn(name="manager_id")
+    private User teamLeader;
+
     public Department getDepartment() {
         return department;
     }
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public User getTeamLeader() {
+        return teamLeader;
+    }
+
+    public void setTeamLeader(User teamLeader) {
+        this.teamLeader = teamLeader;
     }
 
     public Team() {

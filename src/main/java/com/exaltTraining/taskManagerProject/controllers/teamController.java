@@ -49,4 +49,25 @@ public class teamController {
         return "Team creation failed";
 
     }
+    @PostMapping("/team/{teamId}/setLeader/{userId}")
+    public String setLeader(@PathVariable int teamId, @PathVariable int userId, @RequestHeader("Authorization") String authHeader) {
+        // Extract the token
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        // Extract role from token using JwtService
+        String role = jwtService.extractUserRole(token);
+
+        // Check if user is admin
+        if (!"department_manager".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only department managers can assign to teams.";
+        }
+
+        Boolean added= teamService.assignUserToTeam(teamId, userId);
+        if(added) {
+            return "Member assigned successfully";
+        }
+        else {
+            return "Cant assign the member to team";
+        }
+    }
 }

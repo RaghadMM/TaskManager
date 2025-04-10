@@ -1,14 +1,15 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
 import com.exaltTraining.taskManagerProject.config.JwtService;
+import com.exaltTraining.taskManagerProject.config.UserPrinted;
 import com.exaltTraining.taskManagerProject.entities.LoginRequest;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("taskManager")
@@ -45,6 +46,22 @@ public class UserController {
         else{
             return "User is not authenticated";
         }
+    }
+    @GetMapping("/users")
+    public List<UserPrinted> getUsers() {
+        List <User> users= userService.getAllUsers();
+        List<UserPrinted> userPrinteds = users.stream()
+                .map(user -> new UserPrinted(
+                        user.getId(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getEmail(),
+                        user.getRole().toString(),
+                        user.getStatus().toString()// Assuming 'role' is a field in the User entity
+                ))
+                .collect(Collectors.toList());
+
+        return userPrinteds;
     }
 
 
