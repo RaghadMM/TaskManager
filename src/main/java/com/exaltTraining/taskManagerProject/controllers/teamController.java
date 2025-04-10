@@ -62,12 +62,12 @@ public class teamController {
             return "Unauthorized: Only department managers can assign to teams.";
         }
 
-        Boolean added= teamService.assignUserToTeam(teamId, userId);
+        Boolean added= teamService.assignTeamLeader(teamId, userId);
         if(added) {
-            return "Member assigned successfully";
+            return "Leader assigned successfully";
         }
         else {
-            return "Cant assign the member to team";
+            return "Cant assign Leader to team";
         }
     }
 }

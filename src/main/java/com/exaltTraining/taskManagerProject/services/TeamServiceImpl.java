@@ -12,11 +12,12 @@ import java.util.Optional;
 @Service
 public class TeamServiceImpl implements TeamService {
 
-    private  TeamRepository teamRepository;
+    private TeamRepository teamRepository;
     private UserRepository userRepository;
 
-    public TeamServiceImpl(TeamRepository teamRepository) {
+    public TeamServiceImpl(TeamRepository teamRepository,UserRepository userRepository) {
         this.teamRepository = teamRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Boolean assignUserToTeam(int teamId, int UserId) {
+    public Boolean assignTeamLeader(int teamId, int UserId) {
         Optional<User> tempUser= userRepository.findById(UserId);
         Optional<Team> tempTeam= teamRepository.findById(teamId);
         if(tempUser.isPresent() && tempTeam.isPresent()){

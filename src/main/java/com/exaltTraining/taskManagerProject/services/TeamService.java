@@ -5,5 +5,5 @@ import com.exaltTraining.taskManagerProject.entities.Team;
 
 public interface TeamService {
     Team createTeam(Team team, Department department);
-    Boolean assignUserToTeam(int teamId, int UserId);
+    Boolean assignTeamLeader(int teamId, int UserId);
 }
