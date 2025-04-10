@@ -41,7 +41,9 @@ public class DepartmentServiceImpl implements DepartmentService {
             Department department = tempDepartment.get();
 
             department.setManager(user);
+            user.setRole(User.Role.DEPARTMENT_MANAGER);
             repository.save(department);
+            userRepository.save(user);
             return true;
 
         }
