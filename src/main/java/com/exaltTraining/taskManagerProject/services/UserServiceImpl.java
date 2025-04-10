@@ -1,17 +1,11 @@
 package com.exaltTraining.taskManagerProject.services;
-
 import com.exaltTraining.taskManagerProject.dao.UserRepository;
 import com.exaltTraining.taskManagerProject.entities.User;
 import jakarta.persistence.EntityManager;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,15 +31,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean login(String email, String password) {
+    public User login(String email, String password) {
 
         List<User> users=userRepository.findAll();
         for(User user:users) {
             if(user.getEmail().equals(email) && bCryptPasswordEncoder.matches(password,user.getPassword())) {
-                return true;
+                return user;
             }
         }
         System.out.println("User not found");
-        return false; // or throw custom exception
+        return null; // or throw custom exception
     }
 }

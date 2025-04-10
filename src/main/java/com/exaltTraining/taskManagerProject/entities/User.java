@@ -33,6 +33,10 @@ public class User {
     @Column(name = "status")
     private Status status=Status.Available;
 
+    @ManyToOne
+    @JoinColumn(name="department_id")
+    private Department department;
+
     public User() {
     }
 
