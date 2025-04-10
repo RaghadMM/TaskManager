@@ -5,7 +5,6 @@ import com.exaltTraining.taskManagerProject.dao.UserRepository;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.User;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -42,6 +41,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
             department.setManager(user);
             user.setRole(User.Role.DEPARTMENT_MANAGER);
+            user.setDepartment(department);
             repository.save(department);
             userRepository.save(user);
             return true;

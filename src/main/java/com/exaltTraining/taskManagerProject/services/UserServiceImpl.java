@@ -42,4 +42,16 @@ public class UserServiceImpl implements UserService {
         System.out.println("User not found");
         return null; // or throw custom exception
     }
+
+    @Override
+    public User findUserByEmail(String email) {
+        List<User> users=userRepository.findAll();
+        for(User user:users) {
+            if(user.getEmail().equals(email)) {
+                return user;
+            }
+
+        }
+        return null;
+    }
 }

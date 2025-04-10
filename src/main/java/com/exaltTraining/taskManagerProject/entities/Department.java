@@ -1,8 +1,6 @@
 package com.exaltTraining.taskManagerProject.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import org.springframework.scheduling.config.Task;
 
 import java.util.List;
 
@@ -24,6 +22,10 @@ public class Department {
     @OneToOne
     @JoinColumn(name="manager_id")
     private User manager;
+
+    @OneToMany
+    @JoinColumn(name="department_id")
+    private List<Team> teams;
 
     public Department() {
     }
