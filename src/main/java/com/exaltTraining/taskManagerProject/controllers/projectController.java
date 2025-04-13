@@ -21,8 +21,8 @@ public class projectController {
         this.companyService = companyService;
     }
 
-    @PostMapping("/project")
-    public String addProject(@RequestBody Project project, @RequestHeader("Authorization") String authHeader){
+    @PostMapping("/project/{departmentId}")
+    public String addProject(@RequestBody Project project,@PathVariable int departmentId, @RequestHeader("Authorization") String authHeader){
         // Extract the token
         String token = authHeader.substring(7); // Remove "Bearer "
 
@@ -30,7 +30,6 @@ public class projectController {
         String role = jwtService.extractUserRole(token);
         String companyEmail=jwtService.extractUsername(token);
         System.out.println(role);
-        // Check if user is admin
         if (!"company".equalsIgnoreCase(role)) {
             return "Unauthorized: Only Companies accounts can add projects.";
         }
@@ -38,7 +37,7 @@ public class projectController {
         project.setApproved(false);
         project.setCompany(company);
 
-        Project newProject = projectService.addProject(project);
+        Project newProject = projectService.addProject(project,departmentId);
         if(newProject != null){
             return "The project has been added successfully, Wait for the acceptance of this project";
         }
