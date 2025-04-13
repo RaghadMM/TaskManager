@@ -5,6 +5,8 @@ import com.exaltTraining.taskManagerProject.dao.UserRepository;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.User;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -69,5 +71,10 @@ public class DepartmentServiceImpl implements DepartmentService {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<Department> getAllDepartments() {
+        return repository.findAll();
     }
 }

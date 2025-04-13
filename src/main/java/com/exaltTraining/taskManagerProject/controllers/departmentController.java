@@ -1,11 +1,17 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
+import com.exaltTraining.taskManagerProject.config.DepartmentPrinted;
 import com.exaltTraining.taskManagerProject.config.JwtService;
+import com.exaltTraining.taskManagerProject.config.UserPrinted;
 import com.exaltTraining.taskManagerProject.entities.Department;
+import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.DepartmentService;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("taskManager")
@@ -77,6 +83,15 @@ public class departmentController {
         else {
             return "Cant assign the member to department";
         }
+    }
+    @GetMapping("/departments")
+    public List<DepartmentPrinted> getAllDepartments() {
+        List<Department> departments = departmentService.getAllDepartments();
+        return departments.stream().map(department -> {
+            User manager = department.getManager();
+            UserPrinted managerDTO = new UserPrinted(manager.getId(), manager.getFirstName(),manager.getLastName(),manager.getEmail(),manager.getRole().toString(),manager.getStatus().toString());
+            return new DepartmentPrinted(department.getId(), department.getName(), managerDTO);
+        }).collect(Collectors.toList());
     }
 
 }

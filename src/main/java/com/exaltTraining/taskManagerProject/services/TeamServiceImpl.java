@@ -7,6 +7,7 @@ import com.exaltTraining.taskManagerProject.entities.Team;
 import com.exaltTraining.taskManagerProject.entities.User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -85,5 +86,10 @@ public class TeamServiceImpl implements TeamService {
         return null;
 
 
+    }
+
+    @Override
+    public List<Team> getAllTeams() {
+        return teamRepository.findAll();
     }
 }

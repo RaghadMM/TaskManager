@@ -1,6 +1,9 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
+import com.exaltTraining.taskManagerProject.config.DepartmentPrinted;
 import com.exaltTraining.taskManagerProject.config.JwtService;
+import com.exaltTraining.taskManagerProject.config.UserPrinted;
+import com.exaltTraining.taskManagerProject.config.teamPrinted;
 import com.exaltTraining.taskManagerProject.dao.TeamRepository;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.Team;
@@ -9,6 +12,9 @@ import com.exaltTraining.taskManagerProject.services.TeamService;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/taskManager")
@@ -90,6 +96,23 @@ public class teamController {
         else {
             return "Cant assign Member to team";
         }
+    }
+    @GetMapping("/teams")
+    public List<teamPrinted> getAllTeams() {
+        List<Team> teams = teamService.getAllTeams();
+        return teams.stream().map(team -> {
+            //team leader
+            User manager = team.getTeamLeader();
+            UserPrinted leader = new UserPrinted(manager.getId(), manager.getFirstName(),manager.getLastName(),manager.getEmail(),manager.getRole().toString(),manager.getStatus().toString());
+            //department + department manager
+            Department department = team.getDepartment();
+            User depManager = department.getManager();
+            UserPrinted departmentManager = new UserPrinted(depManager.getId(), depManager.getFirstName(),depManager.getLastName(),depManager.getEmail());
+            DepartmentPrinted dep= new DepartmentPrinted(department.getId(),department.getName(),departmentManager);
+            return new teamPrinted(team.getId(), team.getName(), leader,dep);
+        }).collect(Collectors.toList());
+
+
     }
 
 }
