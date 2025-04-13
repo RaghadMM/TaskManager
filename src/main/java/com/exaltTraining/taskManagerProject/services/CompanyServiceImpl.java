@@ -45,4 +45,16 @@ public class CompanyServiceImpl implements CompanyService {
         System.out.println("company not found");
         return null; // or throw custom exception
     }
+
+    @Override
+    public Company findCompanyByEmail(String email) {
+        List<Company> companies=companyRepository.findAll();
+        for(Company company:companies) {
+            if(company.getEmail().equals(email)) {
+                return company;
+            }
+        }
+        System.out.println("company not found");
+        return null;
+    }
 }
