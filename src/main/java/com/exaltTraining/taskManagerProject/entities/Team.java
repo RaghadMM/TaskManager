@@ -27,6 +27,10 @@ public class Team {
     @JoinColumn(name="team_id")
     private List<User> teamMembers;
 
+    @OneToMany
+    @JoinColumn(name="assigned_team_id")
+    private List<Project> projects;
+
     public List<User> getTeamMembers() {
         return teamMembers;
     }

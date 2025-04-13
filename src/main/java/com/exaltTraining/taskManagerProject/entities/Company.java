@@ -2,6 +2,8 @@ package com.exaltTraining.taskManagerProject.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name ="company")
 public class Company {
@@ -18,6 +20,10 @@ public class Company {
     @Column(name="password")
     private String password;
 
+    @OneToMany
+    @JoinColumn(name="company_id")
+    List<Project> projects;
+
     public Company() {
     }
 
@@ -26,6 +32,14 @@ public class Company {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 
     public String getEmail() {

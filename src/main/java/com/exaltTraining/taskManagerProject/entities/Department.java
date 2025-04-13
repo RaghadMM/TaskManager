@@ -27,11 +27,32 @@ public class Department {
     @JoinColumn(name="department_id")
     private List<Team> teams;
 
+    @OneToMany
+    @JoinColumn(name="department_id")
+    List<Project> projects;
+
     public Department() {
     }
 
+
     public Department(String name) {
         this.name = name;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 
     public int getId() {

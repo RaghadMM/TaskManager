@@ -33,6 +33,7 @@ public class departmentController {
         // Extract role from token using JwtService
         String role = jwtService.extractUserRole(token);
 
+        System.out.println(role);
         // Check if user is admin
         if (!"admin".equalsIgnoreCase(role)) {
             return "Unauthorized: Only admin can add departments.";
