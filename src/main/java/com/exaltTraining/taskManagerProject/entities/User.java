@@ -37,7 +37,17 @@ public class User {
     @JoinColumn(name="department_id")
     private Department department;
 
+    @ManyToOne
+    @JoinColumn(name="team_id")
+    private Team team;
 
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 
     public Department getDepartment() {
         return department;

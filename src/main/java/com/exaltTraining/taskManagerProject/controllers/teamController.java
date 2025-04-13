@@ -57,7 +57,6 @@ public class teamController {
         // Extract role from token using JwtService
         String role = jwtService.extractUserRole(token);
 
-        // Check if user is admin
         if (!"department_manager".equalsIgnoreCase(role)) {
             return "Unauthorized: Only department managers can assign to teams.";
         }
@@ -70,4 +69,27 @@ public class teamController {
             return "Cant assign Leader to team";
         }
     }
+    @PostMapping("/team/{teamId}/assignMember/{userId}")
+    public String assignTeamMember(@PathVariable int teamId, @PathVariable int userId, @RequestHeader("Authorization") String authHeader) {
+        // Extract the token
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        // Extract role from token using JwtService
+        String username = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(username); // the user who signed in
+        String role = jwtService.extractUserRole(token);
+
+        if (!"department_manager".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only department managers can assign to teams.";
+        }
+        //pass the signed-in user department to check if the team member department is the same
+        String result= teamService.assignTeamMember(teamId, userId,user.getDepartment().getId());
+        if(result!=null) {
+            return result;
+        }
+        else {
+            return "Cant assign Member to team";
+        }
+    }
+
 }

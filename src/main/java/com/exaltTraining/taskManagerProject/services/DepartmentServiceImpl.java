@@ -49,4 +49,25 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         return false;
     }
+
+    @Override
+    public String assignDepartmentMember(int departmentId, int managerId) {
+        Optional<User> tempUser= userRepository.findById(managerId);
+        Optional<Department> tempDepartment= repository.findById(departmentId);
+        if(tempUser.isPresent() && tempDepartment.isPresent()){
+            User user = tempUser.get();
+            Department department = tempDepartment.get();
+
+            if(user.getDepartment() == null){
+                user.setDepartment(department);
+                userRepository.save(user);
+                return "The user has been assigned to the department";
+            }
+            else{
+                return "The user is already assigned to a department";
+
+            }
+        }
+        return null;
+    }
 }

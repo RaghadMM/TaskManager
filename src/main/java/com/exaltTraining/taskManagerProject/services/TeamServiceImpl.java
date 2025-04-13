@@ -51,4 +51,39 @@ public class TeamServiceImpl implements TeamService {
         }
         return false;
     }
+
+    @Override
+    public String assignTeamMember(int teamId, int UserId, int departmentId) {
+        Optional<User> tempUser= userRepository.findById(UserId);
+        Optional<Team> tempTeam= teamRepository.findById(teamId);
+        if(tempUser.isPresent() && tempTeam.isPresent()) {
+            User user = tempUser.get();
+            Team team = tempTeam.get();
+            //check for department matching and not assigned to a team
+            if(user.getDepartment()!=null){
+                System.out.println("in null department");
+                if(user.getDepartment().getId() == departmentId) {
+                    if (user.getTeam() == null) {
+                        user.setTeam(team);
+                        userRepository.save(user);
+                        return "The user has been assigned to the team";
+
+                    } else {
+                        return "The user is already assigned to a team";
+                    }
+                }
+                else{
+                    return "The User is from another department!";
+                }
+            }
+            else{
+                return "The User is not assigned to a department yet!";
+            }
+
+
+        }
+        return null;
+
+
+    }
 }

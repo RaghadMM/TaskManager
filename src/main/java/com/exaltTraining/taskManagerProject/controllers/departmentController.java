@@ -63,5 +63,20 @@ public class departmentController {
         }
 
     }
+    @PutMapping("/department/{departmentId}/setDepartmentMember/{userId}")
+    public String assignMemberToDepartment(@PathVariable int departmentId, @PathVariable int userId, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only admin can assign members to department.";
+        }
+        String result = departmentService.assignDepartmentMember(departmentId, userId);
+        if(result!=null) {
+            return result;
+        }
+        else {
+            return "Cant assign the member to department";
+        }
+    }
 
 }
