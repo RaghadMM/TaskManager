@@ -4,8 +4,6 @@ import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
 import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.Project;
-import com.exaltTraining.taskManagerProject.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -34,7 +32,6 @@ public class ProjectServiceImpl implements ProjectService {
                 e.printStackTrace();
                 return null;
             }
-
         }
         return null;
 

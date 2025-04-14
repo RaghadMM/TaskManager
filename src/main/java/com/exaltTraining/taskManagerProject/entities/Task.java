@@ -1,0 +1,109 @@
+package com.exaltTraining.taskManagerProject.entities;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name="task")
+public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private int id;
+
+    @Column(name="title")
+    private String title;
+
+    @Column(name="description")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Task.Status status= Task.Status.TODO;
+
+    @Column(name="deadline")
+    private LocalDateTime deadline;
+
+    @ManyToOne
+    @JoinColumn(name="assigned_user_id")
+    private User assignedUser;
+
+    @ManyToOne
+    @JoinColumn(name="project_id")
+    private Project project;
+
+    public Task() {
+    }
+
+    public Task(int id, String title, String description, Status status, LocalDateTime deadline) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.deadline = deadline;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
+
+    public User getAssignedUser() {
+        return assignedUser;
+    }
+
+    public void setAssignedUser(User assignedUser) {
+        this.assignedUser = assignedUser;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public enum Status {
+        TODO,
+        IN_PROGRESS,
+        DONE,
+    }
+}
+

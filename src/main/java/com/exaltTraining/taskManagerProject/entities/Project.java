@@ -2,6 +2,8 @@ package com.exaltTraining.taskManagerProject.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="project")
 public class Project {
@@ -31,6 +33,10 @@ public class Project {
     @JoinColumn(name="assigned_team_id")
     private Team assignedTeam;
 
+    @OneToMany
+    @JoinColumn(name="project_id")
+    private List<Task> tasks;
+
     public Project() {
     }
 
@@ -39,6 +45,14 @@ public class Project {
         this.title = title;
         this.description = description;
         this.approved = approved;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     public int getId() {

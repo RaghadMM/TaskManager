@@ -3,6 +3,8 @@ package com.exaltTraining.taskManagerProject.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 
+import java.util.List;
+
 @Entity
 @Table(name="user")
 public class User {
@@ -40,6 +42,18 @@ public class User {
     @ManyToOne
     @JoinColumn(name="team_id")
     private Team team;
+
+    @OneToMany
+    @JoinColumn(name="assigned_user_id")
+    private List<Task> assignedTasks;
+
+    public List<Task> getAssignedTasks() {
+        return assignedTasks;
+    }
+
+    public void setAssignedTasks(List<Task> assignedTasks) {
+        this.assignedTasks = assignedTasks;
+    }
 
     public Team getTeam() {
         return team;
