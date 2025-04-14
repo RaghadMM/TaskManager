@@ -1,9 +1,13 @@
 package com.exaltTraining.taskManagerProject.config;
 
+import com.exaltTraining.taskManagerProject.entities.Department;
+
 public class projectPrinted {
     private int projectId;
     private String name;
     private String description ;
+    private companyPrinted company;
+    private DepartmentPrinted department;
 
 
     public projectPrinted(int projectId, String name, String description) {
@@ -12,12 +16,28 @@ public class projectPrinted {
         this.description = description;
     }
 
+    public projectPrinted(int projectId, String name, String description, companyPrinted company, DepartmentPrinted department) {
+        this.projectId = projectId;
+        this.name = name;
+        this.description = description;
+        this.company = company;
+        this.department = department;
+    }
+
     public int getProjectId() {
         return projectId;
     }
 
     public void setProjectId(int projectId) {
         this.projectId = projectId;
+    }
+
+    public companyPrinted getCompany() {
+        return company;
+    }
+
+    public void setCompany(companyPrinted company) {
+        this.company = company;
     }
 
     public String getName() {
@@ -36,5 +56,11 @@ public class projectPrinted {
         this.description = description;
     }
 
+    public DepartmentPrinted getDepartment() {
+        return department;
+    }
 
+    public void setDepartment(DepartmentPrinted department) {
+        this.department = department;
+    }
 }

@@ -8,6 +8,7 @@ import java.util.List;
 public interface ProjectService {
     Project addProject(Project project,int depId);
     List<Task> getProjectTasks(int depId);
+    List<Project> getPendingProjects();
 
 
 }

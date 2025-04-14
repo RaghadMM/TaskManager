@@ -53,12 +53,40 @@ public class projectController {
         List<Task> tasks = projectService.getProjectTasks(projectId);
 
         return tasks.stream().map(task -> {
-//            //project
-//            Project project=task.getProject();
-//            projectPrinted print=new projectPrinted(project.getId(),project.getTitle(),project.getDescription());
-//            //department + department manager
 
-            return new taskPrinted(task.getId(), task.getTitle(),task.getDescription(),task.getStatus().toString(),task.getDeadline());
+
+            return new taskPrinted(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), task.getDeadline());
         }).collect(Collectors.toList());
+    }
+    @GetMapping("/pendingProjects")
+    public List<projectPrinted> getPendingProjects(@RequestHeader("Authorization") String authHeader ){
+        // Extract the token
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        // Extract role from token using JwtService
+        String role = jwtService.extractUserRole(token);
+        String companyEmail=jwtService.extractUsername(token);
+        System.out.println(role);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Project> projects = projectService.getPendingProjects();
+        if(projects == null){
+            return null;
+        }
+        return projects.stream().map(project -> {
+            //company
+            Company company= project.getCompany();
+            companyPrinted companyP=new companyPrinted(company.getId(),company.getName(),company.getEmail());
+            System.out.println(companyP);
+            //department
+            Department department= project.getDepartment();
+            System.out.println("department "+department.getId());
+            DepartmentPrinted departmentP =new DepartmentPrinted(department.getId(),department.getName());
+            System.out.println("department printed "+departmentP);
+
+            return new projectPrinted(project.getId(),project.getTitle(),project.getDescription(),companyP,departmentP);
+        }).collect(Collectors.toList());
+
     }
 }

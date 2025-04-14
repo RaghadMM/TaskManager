@@ -54,4 +54,16 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
 
     }
+
+    @Override
+    public List<Project> getPendingProjects() {
+        try{
+            return projectRepository.getProjectsByApproved(false);
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
