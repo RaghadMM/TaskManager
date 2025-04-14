@@ -9,6 +9,7 @@ public interface ProjectService {
     Project addProject(Project project,int depId);
     List<Task> getProjectTasks(int depId);
     List<Project> getPendingProjects();
+    String approveProject(int projectId);
 
 
 }

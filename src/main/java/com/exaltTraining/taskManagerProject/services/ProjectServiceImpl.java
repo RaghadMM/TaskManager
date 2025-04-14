@@ -66,4 +66,16 @@ public class ProjectServiceImpl implements ProjectService {
             return null;
         }
     }
+
+    @Override
+    public String approveProject(int projectId) {
+        Optional<Project> tempProject= projectRepository.findById(projectId);
+        if(tempProject.isPresent()){
+            Project project=tempProject.get();
+            project.setApproved(true);
+            projectRepository.save(project);
+            return "The project approved";
+        }
+        return "The project does not exist";
+    }
 }

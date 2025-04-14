@@ -65,7 +65,6 @@ public class projectController {
 
         // Extract role from token using JwtService
         String role = jwtService.extractUserRole(token);
-        String companyEmail=jwtService.extractUsername(token);
         System.out.println(role);
         if (!"admin".equalsIgnoreCase(role)) {
             return null;
@@ -88,5 +87,15 @@ public class projectController {
             return new projectPrinted(project.getId(),project.getTitle(),project.getDescription(),companyP,departmentP);
         }).collect(Collectors.toList());
 
+    }
+    @PutMapping("/project/{projectId}")
+    public String approveProject(@PathVariable int projectId, @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        String result=projectService.approveProject(projectId);
+        return result;
     }
 }
