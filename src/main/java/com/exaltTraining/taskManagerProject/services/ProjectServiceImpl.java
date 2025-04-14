@@ -4,8 +4,10 @@ import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
 import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.Project;
+import com.exaltTraining.taskManagerProject.entities.Task;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +32,22 @@ public class ProjectServiceImpl implements ProjectService {
             }
             catch(Exception e){
                 e.printStackTrace();
+                return null;
+            }
+        }
+        return null;
+
+    }
+
+    @Override
+    public List<Task> getProjectTasks(int depId) {
+        Optional<Project> tempProject= projectRepository.findById(depId);
+        if(tempProject.isPresent()){
+            List<Task> tasks=tempProject.get().getTasks();
+            if(tasks.size()>0){
+                return tasks;
+            }
+            else{
                 return null;
             }
         }

@@ -35,15 +35,15 @@ public class User {
     @Column(name = "status")
     private Status status=Status.Available;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="department_id")
     private Department department;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="team_id")
     private Team team;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="assigned_user_id")
     private List<Task> assignedTasks;
 

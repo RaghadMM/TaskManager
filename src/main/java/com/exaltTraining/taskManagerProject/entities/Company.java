@@ -20,7 +20,7 @@ public class Company {
     @Column(name="password")
     private String password;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="company_id")
     List<Project> projects;
 

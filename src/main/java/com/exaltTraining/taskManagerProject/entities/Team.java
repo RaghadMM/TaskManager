@@ -15,19 +15,19 @@ public class Team {
     @Column(name="name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="department_id")
     private Department department;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="manager_id")
     private User teamLeader;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="team_id")
     private List<User> teamMembers;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="assigned_team_id")
     private List<Project> projects;
 

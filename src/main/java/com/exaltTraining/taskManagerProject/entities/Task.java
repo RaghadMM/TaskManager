@@ -25,11 +25,11 @@ public class Task {
     @Column(name="deadline")
     private LocalDateTime deadline;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="assigned_user_id")
     private User assignedUser;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="project_id")
     private Project project;
 

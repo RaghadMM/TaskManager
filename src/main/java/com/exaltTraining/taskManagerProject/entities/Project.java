@@ -21,19 +21,19 @@ public class Project {
     @Column(name="approved")
     private Boolean approved;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="company_id")
     private Company company;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="department_id")
     private Department department;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="assigned_team_id")
     private Team assignedTeam;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="project_id")
     private List<Task> tasks;
 

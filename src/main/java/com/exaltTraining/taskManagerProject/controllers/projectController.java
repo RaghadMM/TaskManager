@@ -1,12 +1,14 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
-import com.exaltTraining.taskManagerProject.config.JwtService;
-import com.exaltTraining.taskManagerProject.entities.Company;
-import com.exaltTraining.taskManagerProject.entities.Project;
+import com.exaltTraining.taskManagerProject.config.*;
+import com.exaltTraining.taskManagerProject.entities.*;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import com.exaltTraining.taskManagerProject.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/taskManager")
@@ -45,5 +47,18 @@ public class projectController {
             return "The project has not been added successfully";
         }
 
+    }
+    @GetMapping("/projectTasks/{projectId}")
+    public List<taskPrinted> getProjectTasks(@PathVariable int projectId){
+        List<Task> tasks = projectService.getProjectTasks(projectId);
+
+        return tasks.stream().map(task -> {
+//            //project
+//            Project project=task.getProject();
+//            projectPrinted print=new projectPrinted(project.getId(),project.getTitle(),project.getDescription());
+//            //department + department manager
+
+            return new taskPrinted(task.getId(), task.getTitle(),task.getDescription(),task.getStatus().toString(),task.getDeadline());
+        }).collect(Collectors.toList());
     }
 }
