@@ -1,11 +1,14 @@
 package com.exaltTraining.taskManagerProject.services;
 import com.exaltTraining.taskManagerProject.dao.UserRepository;
+import com.exaltTraining.taskManagerProject.entities.Email;
+import com.exaltTraining.taskManagerProject.entities.PasswordResetForm;
 import com.exaltTraining.taskManagerProject.entities.User;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -16,13 +19,18 @@ public class UserServiceImpl implements UserService {
     @Autowired
     //private AuthenticationManager authenticationManager;
     private EntityManager entityManager;
+    private EmailService emailService;
 
 
-    public UserServiceImpl(UserRepository userRepository) {
+
+    public UserServiceImpl(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
     @Override
     public User registerUser(User user) {
+        Email email = new Email(user.getEmail(),"We are happy to be with us! \n here is your account password: "+ user.getPassword(),"Welcome to our company!");
+        String result =emailService.sendSimpleMail(email);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         userRepository.save(user);
@@ -64,5 +72,31 @@ public class UserServiceImpl implements UserService {
         catch (Exception e) {
             return null;
         }
+    }
+
+    @Override
+    public String resetPassword(int userId, String email, PasswordResetForm form) {
+        Optional<User> user=userRepository.findById(userId);
+        String oldPassedPassword = form.getOldPassword();
+        String newPassedPassword = form.getNewPassword();
+        if(user.isPresent()) {
+            User tempUser =user.get();
+            String realPassword = tempUser.getPassword();
+            if(tempUser.getEmail().equals(email)) {
+                if(bCryptPasswordEncoder.matches(oldPassedPassword,realPassword)) {
+                    tempUser.setPassword(bCryptPasswordEncoder.encode(newPassedPassword));
+                    userRepository.save(tempUser);
+                    return "Password reset successful";
+                }
+                else {
+                    return "The passwords do not match";
+                }
+
+            }
+            else{
+                return "Unauthorized user";
+            }
+        }
+        return "Unauthorized user";
     }
 }

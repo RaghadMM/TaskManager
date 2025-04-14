@@ -3,6 +3,7 @@ package com.exaltTraining.taskManagerProject.controllers;
 import com.exaltTraining.taskManagerProject.config.JwtService;
 import com.exaltTraining.taskManagerProject.config.UserPrinted;
 import com.exaltTraining.taskManagerProject.entities.LoginRequest;
+import com.exaltTraining.taskManagerProject.entities.PasswordResetForm;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,16 @@ public class UserController {
         this.userService = userService;
     }
 
+    // Create an account for a user by the admin
     @PostMapping("/user")
-    public String createUser(@RequestBody User user) {
+    public String createUser(@RequestBody User user, @RequestHeader("Authorization") String authHeader) {
         try{
+            //Extract the user role
+            String token = authHeader.substring(7);
+            String role = jwtService.extractUserRole(token);
+            if (!"admin".equalsIgnoreCase(role)) {
+                return "Unauthorized: Only admin can register users.";
+            }
             userService.registerUser(user);
         }
         catch(Exception e){
@@ -57,11 +65,19 @@ public class UserController {
                         user.getLastName(),
                         user.getEmail(),
                         user.getRole().toString(),
-                        user.getStatus().toString()// Assuming 'role' is a field in the User entity
+                        user.getStatus().toString()
                 ))
                 .collect(Collectors.toList());
 
         return userPrinteds;
+    }
+    @PutMapping("/passwordReset/{userId}")
+    public String changePassword(@PathVariable int userId, @RequestBody PasswordResetForm form, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String email = jwtService.extractUsername(token);
+
+        return userService.resetPassword(userId, email,form);
+
     }
 
 

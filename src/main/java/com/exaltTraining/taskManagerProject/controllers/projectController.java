@@ -36,16 +36,22 @@ public class projectController {
             return "Unauthorized: Only Companies accounts can add projects.";
         }
         Company company = companyService.findCompanyByEmail(companyEmail);
-        project.setApproved(false);
-        project.setCompany(company);
+        if(company.getApproved()){
+            project.setApproved(false);
+            project.setCompany(company);
 
-        Project newProject = projectService.addProject(project,departmentId);
-        if(newProject != null){
-            return "The project has been added successfully, Wait for the acceptance of this project";
+            Project newProject = projectService.addProject(project,departmentId);
+            if(newProject != null){
+                return "The project has been added successfully, Wait for the acceptance of this project";
+            }
+            else{
+                return "The project has not been added successfully";
+            }
         }
         else{
-            return "The project has not been added successfully";
+            return "The company is not approved yet";
         }
+
 
     }
     @GetMapping("/projectTasks/{projectId}")

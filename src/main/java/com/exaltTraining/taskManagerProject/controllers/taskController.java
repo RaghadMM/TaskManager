@@ -38,13 +38,19 @@ public class taskController {
         }
 
         Company company = companyService.findCompanyByEmail(companyEmail);
-
-        String result=taskService.addTaskToAProject(task,projectId,company);
-        if(result!=null){
-            return result;
+        if(company.getApproved()){
+            String result=taskService.addTaskToAProject(task,projectId,company);
+            if(result!=null){
+                return result;
+            }
+            else{
+                return "Task not added";
+            }
         }
         else{
-            return "Task not added";
+            return "The company is not approved yet.";
         }
+
+
     }
 }

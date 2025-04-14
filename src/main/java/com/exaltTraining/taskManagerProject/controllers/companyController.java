@@ -6,10 +6,7 @@ import com.exaltTraining.taskManagerProject.entities.LoginRequest;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("taskManager")
@@ -30,6 +27,23 @@ public class companyController {
         else {
             return "Company creation failed";
         }
+    }
+    @PutMapping("/companyApproval/{companyId}")
+    public String approveCompanyAccount(@PathVariable int companyId,@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only admin can approve companies.";
+        }
+        Boolean isApproved= companyService.approveCompany(companyId);
+        System.out.println(isApproved);
+        if(isApproved) {
+            return "Company approved successfully";
+        }
+        else {
+            return "Company not approved";
+        }
+
     }
     @PostMapping("/companyLogin")
     public String login(@RequestBody LoginRequest loginRequest) {

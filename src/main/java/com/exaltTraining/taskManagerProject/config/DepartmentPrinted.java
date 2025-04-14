@@ -7,10 +7,10 @@ public class DepartmentPrinted {
     private String name;
     private UserPrinted Manager;
 
-    public DepartmentPrinted(int id, String name, UserPrinted user) {
+    public DepartmentPrinted(int id, String name, UserPrinted Manager) {
         this.id = id;
         this.name = name;
-        this.Manager = user;
+        this.Manager = Manager;
 
     }
 
@@ -38,8 +38,8 @@ public class DepartmentPrinted {
         return Manager;
     }
 
-    public void setUser(UserPrinted user) {
-        this.Manager = user;
+    public void setUser(UserPrinted Manager) {
+        this.Manager = Manager;
     }
 
 }
