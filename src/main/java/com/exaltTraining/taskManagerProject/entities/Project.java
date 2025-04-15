@@ -2,6 +2,8 @@ package com.exaltTraining.taskManagerProject.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,6 +23,12 @@ public class Project {
     @Column(name="approved")
     private Boolean approved;
 
+    @Column(name="start_date")
+    private LocalDateTime startDate;
+
+    @Column(name="end_date")
+    private LocalDateTime endDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="company_id")
     private Company company;
@@ -33,18 +41,20 @@ public class Project {
     @JoinColumn(name="assigned_team_id")
     private Team assignedTeam;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="project_id")
     private List<Task> tasks;
 
     public Project() {
     }
 
-    public Project(int id, String title, String description, Boolean approved) {
+    public Project(int id, String title, String description, Boolean approved, LocalDateTime startDate, LocalDateTime endDate, Team assignedTeam, List<Task> tasks) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.approved = approved;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public List<Task> getTasks() {
@@ -109,5 +119,21 @@ public class Project {
 
     public void setAssignedTeam(Team assignedTeam) {
         this.assignedTeam = assignedTeam;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 }

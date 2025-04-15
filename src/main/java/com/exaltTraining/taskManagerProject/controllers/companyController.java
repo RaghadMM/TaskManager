@@ -1,11 +1,9 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
 import com.exaltTraining.taskManagerProject.config.JwtService;
-import com.exaltTraining.taskManagerProject.config.UserPrinted;
 import com.exaltTraining.taskManagerProject.config.companyPrinted;
 import com.exaltTraining.taskManagerProject.entities.Company;
 import com.exaltTraining.taskManagerProject.entities.LoginRequest;
-import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -94,6 +92,47 @@ public class companyController {
                 .collect(Collectors.toList());
 
         return companyP;
+    }
+
+    //Get approved companies API
+    @GetMapping("/approvedCompanies")
+    public List<companyPrinted> getApprovedCompanies(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Company> companies=companyService.getApprovedCompanies();
+        if(companies==null){
+            return null;
+        }
+        List<companyPrinted> companyP = companies.stream()
+                .map(company -> new companyPrinted(
+                        company.getId(),
+                        company.getName(),
+                        company.getEmail(),
+                        company.getApproved()
+                ))
+                .collect(Collectors.toList());
+
+        return companyP;
+    }
+    //Delete a company with projects
+    @DeleteMapping("/company/{companyId}")
+    public String deleteCompanyAccount(@PathVariable int companyId,@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only admin can delete companies.";
+        }
+        Boolean isDeleted = companyService.deleteCompany(companyId);
+        if(isDeleted) {
+            return "Company deleted successfully";
+        }
+        else {
+            return "Company not deleted";
+        }
+
     }
 
 }

@@ -9,4 +9,5 @@ public interface DepartmentService {
    Boolean assignManagerToDepartment(int departmentId,int managerId);
    String assignDepartmentMember(int departmentId, int managerId);
    List<Department> getAllDepartments();
+   Boolean deleteDepartment(int departmentId);
 }

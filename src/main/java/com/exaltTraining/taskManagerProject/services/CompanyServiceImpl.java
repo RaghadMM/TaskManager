@@ -26,7 +26,7 @@ public class CompanyServiceImpl implements CompanyService {
         this.emailService = emailService;
     }
 
-    // Create a company account by the company it self, this account will be bending till admin approval
+    // Create a company account by the company itself, this account will be bending till admin approval
     @Override
     public Company createCompanyAccount(Company company) {
         try{
@@ -120,4 +120,35 @@ public class CompanyServiceImpl implements CompanyService {
             return null;
         }
     }
+    //Get the approved companies by the admin
+    @Override
+    public List<Company> getApprovedCompanies() {
+        try {
+            return companyRepository.findAllByApproved(true);
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+    }
+
+    //Delete a company by the admin
+    //By cascading delete the company projects and tasks
+    @Override
+    public Boolean deleteCompany(int companyId) {
+        try{
+            Optional<Company> tempCompany= companyRepository.findById(companyId);
+            if(tempCompany.isPresent()){
+                companyRepository.delete(tempCompany.get());
+                return true;
+            }
+            return false;
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
 }

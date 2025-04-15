@@ -23,7 +23,7 @@ public class Department {
     @JoinColumn(name="manager_id")
     private User manager;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="department_id")
     private List<Team> teams;
 

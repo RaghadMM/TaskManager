@@ -81,4 +81,20 @@ public class DepartmentServiceImpl implements DepartmentService {
     public List<Department> getAllDepartments() {
         return repository.findAll();
     }
+
+    //Delete a department
+    //Cascade delete, delete all department teams
+    @Override
+    public Boolean deleteDepartment(int departmentId) {
+        try{
+            repository.deleteById(departmentId);
+            return true;
+        }
+        catch (Exception e) {
+            System.out.println("cant delete department");
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
 }

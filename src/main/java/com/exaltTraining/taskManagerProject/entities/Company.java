@@ -22,7 +22,7 @@ public class Company {
     @Column(name="approved")
     private Boolean approved;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="company_id")
     List<Project> projects;
 
