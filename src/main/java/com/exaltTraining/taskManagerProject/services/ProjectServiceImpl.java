@@ -21,6 +21,8 @@ public class ProjectServiceImpl implements ProjectService {
         this.departmentRepository = departmentRepository;
     }
 
+    //Add a new project by external approved companies
+    //The project will be pending till it approved by the admin
     @Override
     public Project addProject(Project project, int depId) {
         Optional<Department> tempDepartment= departmentRepository.findById(depId);
@@ -39,6 +41,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
+    //Get project related tasks
     @Override
     public List<Task> getProjectTasks(int depId) {
         Optional<Project> tempProject= projectRepository.findById(depId);
@@ -55,6 +58,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
+    //Get pending projects to check them by the admin
     @Override
     public List<Project> getPendingProjects() {
         try{
@@ -67,6 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
+    //Approve a project by the admin, accept or reject
     @Override
     public String approveProject(int projectId) {
         Optional<Project> tempProject= projectRepository.findById(projectId);

@@ -32,6 +32,7 @@ public class teamController {
         this.teamService = teamService;
     }
 
+    //Create new team API
     @PostMapping("/team")
     public String createTeam(@RequestBody Team team, @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7); // Remove "Bearer "
@@ -44,7 +45,7 @@ public class teamController {
         System.out.println(username);
         System.out.println("dep "+department);
 
-        // Check if user is admin
+        // Check if user is a department manager
         if (!"department_manager".equalsIgnoreCase(role)) {
             return "Unauthorized: Only department managers can add teams.";
         }
@@ -55,6 +56,8 @@ public class teamController {
         return "Team creation failed";
 
     }
+
+    //Set team leader API
     @PostMapping("/team/{teamId}/setLeader/{userId}")
     public String setLeader(@PathVariable int teamId, @PathVariable int userId, @RequestHeader("Authorization") String authHeader) {
         // Extract the token
@@ -75,6 +78,8 @@ public class teamController {
             return "Cant assign Leader to team";
         }
     }
+
+    //Add team member API
     @PostMapping("/team/{teamId}/assignMember/{userId}")
     public String assignTeamMember(@PathVariable int teamId, @PathVariable int userId, @RequestHeader("Authorization") String authHeader) {
         // Extract the token
@@ -97,6 +102,8 @@ public class teamController {
             return "Cant assign Member to team";
         }
     }
+
+    //Get all teams API
     @GetMapping("/teams")
     public List<teamPrinted> getAllTeams() {
         List<Team> teams = teamService.getAllTeams();

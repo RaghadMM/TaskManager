@@ -20,6 +20,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         this.userRepository = userRepository;
     }
 
+    //Add a new department by the admin
     @Override
     public Department addDepartment(Department department) {
         try {
@@ -33,6 +34,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
     }
 
+    //Set a user as a department manager by the admin
     @Override
     public Boolean assignManagerToDepartment(int departmentId, int managerId) {
         Optional<User> tempUser= userRepository.findById(managerId);
@@ -52,6 +54,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         return false;
     }
 
+    //Assign users to specific department by the admin
     @Override
     public String assignDepartmentMember(int departmentId, int managerId) {
         Optional<User> tempUser= userRepository.findById(managerId);
@@ -73,6 +76,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         return null;
     }
 
+    //Get all company departments
     @Override
     public List<Department> getAllDepartments() {
         return repository.findAll();

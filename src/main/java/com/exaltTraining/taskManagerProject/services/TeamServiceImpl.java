@@ -21,6 +21,7 @@ public class TeamServiceImpl implements TeamService {
         this.userRepository = userRepository;
     }
 
+    //Create a new team by the department manager
     @Override
     public Team createTeam(Team team, Department department) {
         try{
@@ -34,6 +35,8 @@ public class TeamServiceImpl implements TeamService {
         }
     }
 
+    //Set a leader for a team by department manager
+    //The process is restricted for the team department manager
     @Override
     public Boolean assignTeamLeader(int teamId, int UserId) {
         Optional<User> tempUser= userRepository.findById(UserId);
@@ -53,6 +56,8 @@ public class TeamServiceImpl implements TeamService {
         return false;
     }
 
+    //Add members to a team by the department manager
+    //Check that the user is not related to another team and for department matching between the user and the team
     @Override
     public String assignTeamMember(int teamId, int UserId, int departmentId) {
         Optional<User> tempUser= userRepository.findById(UserId);
@@ -87,7 +92,7 @@ public class TeamServiceImpl implements TeamService {
 
 
     }
-
+    //Get all teams
     @Override
     public List<Team> getAllTeams() {
         return teamRepository.findAll();

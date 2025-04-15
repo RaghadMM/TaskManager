@@ -27,6 +27,8 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.emailService = emailService;
     }
+    // Create an account for a user by the admin
+    //The user receives email includes the password
     @Override
     public User registerUser(User user) {
         Email email = new Email(user.getEmail(),"We are happy to be with us! \n here is your account password: "+ user.getPassword(),"Welcome to our company!");
@@ -37,7 +39,8 @@ public class UserServiceImpl implements UserService {
         return user;
 
     }
-
+    //Log in for the users.
+    //generate a JWT token if the user is authenticated.
     @Override
     public User login(String email, String password) {
 
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
         return null; // or throw custom exception
     }
 
+    //Helper function to get a user by his email
     @Override
     public User findUserByEmail(String email) {
         List<User> users=userRepository.findAll();
@@ -62,7 +66,7 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
-
+    //Get all users in the system
     @Override
     public List<User> getAllUsers() {
         try {
@@ -74,6 +78,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //Reset password
+    //Checks for user authorization, old passwords matching
     @Override
     public String resetPassword(int userId, String email, PasswordResetForm form) {
         Optional<User> user=userRepository.findById(userId);

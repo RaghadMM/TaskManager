@@ -1,5 +1,6 @@
 package com.exaltTraining.taskManagerProject.entities;
 
+//To perform a reset password data form to be passed in the request body
 public class PasswordResetForm {
     private String oldPassword;
     private String newPassword;
