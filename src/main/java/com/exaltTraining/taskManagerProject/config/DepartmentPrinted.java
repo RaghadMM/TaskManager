@@ -1,7 +1,6 @@
 package com.exaltTraining.taskManagerProject.config;
 
-import com.exaltTraining.taskManagerProject.entities.User;
-
+//Helper class used to specify the form of returning department
 public class DepartmentPrinted {
     private int id;
     private String name;

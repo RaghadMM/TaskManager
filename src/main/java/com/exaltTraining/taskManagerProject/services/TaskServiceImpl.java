@@ -21,6 +21,8 @@ public class TaskServiceImpl implements TaskService {
         this.projectRepository = projectRepository;
     }
 
+    //Add new task to a project
+    //The adding process is restricted to be done just by the company that owns the project
     @Override
     public String addTaskToAProject(Task task, int projectId, Company company) {
         Optional<Project> tempProject= projectRepository.findById(projectId);

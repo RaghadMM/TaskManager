@@ -23,6 +23,7 @@ public class projectController {
         this.companyService = companyService;
     }
 
+    //Add a new project by a company API
     @PostMapping("/project/{departmentId}")
     public String addProject(@RequestBody Project project,@PathVariable int departmentId, @RequestHeader("Authorization") String authHeader){
         // Extract the token
@@ -35,6 +36,7 @@ public class projectController {
         if (!"company".equalsIgnoreCase(role)) {
             return "Unauthorized: Only Companies accounts can add projects.";
         }
+        //Check for company approval
         Company company = companyService.findCompanyByEmail(companyEmail);
         if(company.getApproved()){
             project.setApproved(false);
@@ -54,6 +56,7 @@ public class projectController {
 
 
     }
+    //Get project tasks API
     @GetMapping("/projectTasks/{projectId}")
     public List<taskPrinted> getProjectTasks(@PathVariable int projectId){
         List<Task> tasks = projectService.getProjectTasks(projectId);
@@ -64,6 +67,8 @@ public class projectController {
             return new taskPrinted(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), task.getDeadline());
         }).collect(Collectors.toList());
     }
+
+    //Get pending projects API
     @GetMapping("/pendingProjects")
     public List<projectPrinted> getPendingProjects(@RequestHeader("Authorization") String authHeader ){
         // Extract the token
@@ -94,6 +99,8 @@ public class projectController {
         }).collect(Collectors.toList());
 
     }
+
+    //Approve project API
     @PutMapping("/project/{projectId}")
     public String approveProject(@PathVariable int projectId, @RequestHeader("Authorization") String authHeader){
         String token = authHeader.substring(7);

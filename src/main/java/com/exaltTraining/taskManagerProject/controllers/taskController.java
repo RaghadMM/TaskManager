@@ -24,6 +24,7 @@ public class taskController {
         this.companyService = companyService;
     }
 
+    //Add new task to a project API
     @PostMapping("/task/project/{projectId}")
     public String addTask(@PathVariable int projectId, @RequestBody Task task,@RequestHeader("Authorization") String authHeader){
         // Extract the token

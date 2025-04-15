@@ -1,5 +1,6 @@
 package com.exaltTraining.taskManagerProject.config;
 
+//Helper class used to specify the form of returning team
 public class teamPrinted {
     private int teamId;
     private String teamName;

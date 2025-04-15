@@ -1,5 +1,6 @@
 package com.exaltTraining.taskManagerProject.config;
 
+//Helper class used to specify the form of returning user
 public class UserPrinted {
     private int id;
     private String firstName;

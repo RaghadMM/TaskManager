@@ -1,7 +1,7 @@
 package com.exaltTraining.taskManagerProject.config;
 
 import java.time.LocalDateTime;
-
+//Helper class used to specify the form of returning task
 public class taskPrinted {
     private int taskId;
     private String taskName;

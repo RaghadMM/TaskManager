@@ -1,5 +1,6 @@
 package com.exaltTraining.taskManagerProject.entities;
 
+//To perform a login data form to be passed in the request body
 public class LoginRequest {
 
     private String email;

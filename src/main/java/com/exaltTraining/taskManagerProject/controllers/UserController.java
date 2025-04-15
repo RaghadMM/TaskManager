@@ -25,7 +25,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    // Create an account for a user by the admin
+    // Create an account for a user by the admin API
     @PostMapping("/user")
     public String createUser(@RequestBody User user, @RequestHeader("Authorization") String authHeader) {
         try{
@@ -42,6 +42,8 @@ public class UserController {
         }
         return "User registered successfully";
     }
+
+    //Log in for the users API
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
@@ -55,6 +57,8 @@ public class UserController {
             return "User is not authenticated";
         }
     }
+
+    //Get all users API
     @GetMapping("/users")
     public List<UserPrinted> getUsers() {
         List <User> users= userService.getAllUsers();
@@ -71,6 +75,8 @@ public class UserController {
 
         return userPrinteds;
     }
+
+    //Reset password API
     @PutMapping("/passwordReset/{userId}")
     public String changePassword(@PathVariable int userId, @RequestBody PasswordResetForm form, @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);

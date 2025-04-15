@@ -26,6 +26,7 @@ public class CompanyServiceImpl implements CompanyService {
         this.emailService = emailService;
     }
 
+    // Create a company account by the company it self, this account will be bending till admin approval
     @Override
     public Company createCompanyAccount(Company company) {
         try{
@@ -39,21 +40,50 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
+    //Approve company account by the admin
+    //Send email to the company
     @Override
-    public Boolean approveCompany(int companyId) {
+    public Boolean approveCompany(int companyId, String decision) {
         Optional<Company> tempCompany= companyRepository.findById(companyId);
         if(tempCompany.isPresent()){
             Company company = tempCompany.get();
-            company.setApproved(true);
-            companyRepository.save(company);
-            Email email = new Email(company.getEmail(),"We are happy to be a collaborators with your company, your request is approved  \n waiting for projects!","Request approval");
-            String result =emailService.sendSimpleMail(email);
-            System.out.println(result);
-            return true;
+            if(decision.equals("approve")){
+                company.setApproved(true);
+                companyRepository.save(company);
+
+                //Sending an email for the company
+                String body = "Dear " + company.getName() + ",\n\n" +
+                        "We are pleased to inform you that your collaboration request has been approved. " +
+                        "We are excited to have the opportunity to work together and look forward to seeing the great projects we'll accomplish.\n\n" +
+                        "Welcome aboard!\n\n" +
+                        "Best regards,\nTask Manager Team";
+
+                Email email = new Email(company.getEmail(), body, "Request Approved — Welcome Aboard!");
+                String result =emailService.sendSimpleMail(email);
+                System.out.println(result);
+                return true;
+            }
+            else if(decision.equals("reject")){
+                company.setApproved(false);
+                companyRepository.save(company);
+                //Sending an email for the company
+                String body = "Dear " + company.getName() + ",\n\n" +
+                        "Thank you for your interest in collaborating with us. After careful consideration, " +
+                        "we regret to inform you that we are unable to proceed with the request at this time.\n\n" +
+                        "We truly appreciate your effort and hope to have the opportunity to work together in the future.\n\n" +
+                        "Kind regards,\n Task Manager Team";
+
+                Email email = new Email(company.getEmail(), body, "Collaboration Request Update");
+                String result =emailService.sendSimpleMail(email);
+                System.out.println(result);
+                return false;
+            }
         }
         return false;
     }
 
+    //Special log in for a company
+    //put the "company" role in the generated JWT token
     @Override
     public Company login(String email, String password) {
         List<Company> companies=companyRepository.findAll();
@@ -66,6 +96,7 @@ public class CompanyServiceImpl implements CompanyService {
         return null; // or throw custom exception
     }
 
+    //Helper function to find a company by its email
     @Override
     public Company findCompanyByEmail(String email) {
         List<Company> companies=companyRepository.findAll();
@@ -76,5 +107,17 @@ public class CompanyServiceImpl implements CompanyService {
         }
         System.out.println("company not found");
         return null;
+    }
+
+    //Get all companies requests by the admin
+    @Override
+    public List<Company> findAllCompanies() {
+        try{
+            return companyRepository.findAll();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }

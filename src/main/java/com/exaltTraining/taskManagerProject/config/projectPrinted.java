@@ -1,7 +1,7 @@
 package com.exaltTraining.taskManagerProject.config;
 
-import com.exaltTraining.taskManagerProject.entities.Department;
 
+//Helper class used to specify the form of returning project
 public class projectPrinted {
     private int projectId;
     private String name;

@@ -25,6 +25,7 @@ public class departmentController {
         this.departmentService = departmentService;
     }
 
+    //Add a new department API
     @PostMapping("/department")
     public String addDepartment(@RequestBody Department department, @RequestHeader("Authorization") String authHeader) {
         // Extract the token
@@ -48,6 +49,8 @@ public class departmentController {
         }
 
     }
+
+    //Set department manager API
     @PostMapping("/department/{departmentId}/setManager/{userId}")
     public String addDepartmentManager(@PathVariable int departmentId,@PathVariable int userId, @RequestHeader("Authorization") String authHeader) {
         // Extract the token
@@ -70,6 +73,8 @@ public class departmentController {
         }
 
     }
+
+    //Assign users to a department API
     @PutMapping("/department/{departmentId}/setDepartmentMember/{userId}")
     public String assignMemberToDepartment(@PathVariable int departmentId, @PathVariable int userId, @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
@@ -85,6 +90,7 @@ public class departmentController {
             return "Cant assign the member to department";
         }
     }
+    //Get all departments API
     @GetMapping("/departments")
     public List<DepartmentPrinted> getAllDepartments() {
         List<Department> departments = departmentService.getAllDepartments();
