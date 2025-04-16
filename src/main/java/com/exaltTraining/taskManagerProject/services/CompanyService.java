@@ -10,4 +10,6 @@ public interface CompanyService {
     Company login(String email, String password);
     Company findCompanyByEmail(String email);
     List<Company> findAllCompanies();
+    List<Company> getApprovedCompanies();
+    Boolean deleteCompany(int companyId);
 }

@@ -6,7 +6,6 @@ import com.exaltTraining.taskManagerProject.config.UserPrinted;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.DepartmentService;
-import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -99,6 +98,22 @@ public class departmentController {
             UserPrinted managerDTO = new UserPrinted(manager.getId(), manager.getFirstName(),manager.getLastName(),manager.getEmail(),manager.getRole().toString(),manager.getStatus().toString());
             return new DepartmentPrinted(department.getId(), department.getName(), managerDTO);
         }).collect(Collectors.toList());
+    }
+    //Delete a department API
+    @DeleteMapping("/department/{departmentId}")
+    public String deleteDepartment(@PathVariable int departmentId, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only admin can delete department.";
+        }
+        Boolean isDeleted = departmentService.deleteDepartment(departmentId);
+        if(isDeleted) {
+            return "Department deleted successfully";
+        }
+        else {
+            return "Cant delete the department";
+        }
     }
 
 }

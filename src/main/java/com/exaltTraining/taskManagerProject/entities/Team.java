@@ -23,8 +23,8 @@ public class Team {
     @JoinColumn(name="manager_id")
     private User teamLeader;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="team_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = false)
+    @JoinColumn(name="team_id", nullable = true)
     private List<User> teamMembers;
 
     @OneToMany(fetch = FetchType.LAZY)
