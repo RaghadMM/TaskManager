@@ -39,15 +39,16 @@ public class projectController {
         //Check for company approval
         Company company = companyService.findCompanyByEmail(companyEmail);
         if(company.getApproved()){
+
             project.setApproved(false);
             project.setCompany(company);
 
-            Project newProject = projectService.addProject(project,departmentId);
-            if(newProject != null){
-                return "The project has been added successfully, Wait for the acceptance of this project";
+            String result = projectService.addProject(project,departmentId,company);
+            if(result != null){
+                return result;
             }
             else{
-                return "The project has not been added successfully";
+                return "The project has not been added yet!";
             }
         }
         else{
@@ -100,15 +101,56 @@ public class projectController {
 
     }
 
-    //Approve project API
-    @PutMapping("/project/{projectId}")
-    public String approveProject(@PathVariable int projectId, @RequestHeader("Authorization") String authHeader){
+    //To delay or cancel a project API
+    @PutMapping("/project/{projectId}/{decision}")
+    public String cancelOrDelayProject(@PathVariable int projectId, @PathVariable String decision, @RequestHeader("Authorization") String authHeader){
         String token = authHeader.substring(7);
         String role = jwtService.extractUserRole(token);
-        if (!"admin".equalsIgnoreCase(role)) {
-            return null;
+        String companyEmail=jwtService.extractUsername(token);
+        Company company = companyService.findCompanyByEmail(companyEmail);
+        if (!"company".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only Companies accounts can cancel projects.";
         }
-        String result=projectService.approveProject(projectId);
+        String result=projectService.cancelOrDelayProject(projectId,decision,company);
         return result;
     }
+
+    //To get all company's pending projects
+    @GetMapping("/Company/pendingProjects")
+    public List<projectPrinted> getCompanyPendingProjects(@RequestHeader ("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String companyEmail=jwtService.extractUsername(token);
+        if(!"company".equalsIgnoreCase(role)) {
+            return null;
+        }
+        Company company = companyService.findCompanyByEmail(companyEmail);
+        List<Project> projects = projectService.getCompanyPendingProjects(company);
+
+        List<projectPrinted> projectP = projects.stream()
+                .map(project -> new projectPrinted(
+                        project.getId(),
+                        project.getTitle(),
+                        project.getDescription(),
+                        project.getStartDate(),
+                        project.getEndDate()
+                ))
+                .collect(Collectors.toList());
+
+        return projectP;
+
+    }
+
+//    //Approve project API
+//    @PutMapping("/project/{projectId}")
+//    public String approveProject(@PathVariable int projectId, @RequestHeader("Authorization") String authHeader){
+//        String token = authHeader.substring(7);
+//        String role = jwtService.extractUserRole(token);
+//        if (!"admin".equalsIgnoreCase(role)) {
+//            return null;
+//        }
+//        String result=projectService.approveProject(projectId);
+//        return result;
+//    }
+
 }
