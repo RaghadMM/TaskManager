@@ -2,11 +2,12 @@ package com.exaltTraining.taskManagerProject.services;
 
 import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
 import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
-import com.exaltTraining.taskManagerProject.entities.Department;
-import com.exaltTraining.taskManagerProject.entities.Project;
-import com.exaltTraining.taskManagerProject.entities.Task;
+import com.exaltTraining.taskManagerProject.entities.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,22 +16,30 @@ public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRepository projectRepository;
     private DepartmentRepository departmentRepository;
+    private EmailService emailService;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, DepartmentRepository departmentRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, DepartmentRepository departmentRepository, EmailService emailService) {
         this.projectRepository = projectRepository;
         this.departmentRepository = departmentRepository;
+        this.emailService = emailService;
     }
 
     //Add a new project by external approved companies
     //The project will be pending till it approved by the admin
     @Override
-    public Project addProject(Project project, int depId) {
+    public String addProject(Project project, int depId, Company company) {
         Optional<Department> tempDepartment= departmentRepository.findById(depId);
         if(tempDepartment.isPresent()){
             Department department = tempDepartment.get();
             try{
                 project.setDepartment(department);
-                return projectRepository.save(project);
+                Boolean available=checkForProjectAvailability(depId,project,company,false);
+                if(available){
+                    return "Project has been added successfully!";
+                }
+                else{
+                    return "Project has not been added yet, check for the email please!s";
+                }
             }
             catch(Exception e){
                 e.printStackTrace();
@@ -38,7 +47,6 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
         return null;
-
     }
 
     //Get project related tasks
@@ -72,15 +80,150 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     //Approve a project by the admin, accept or reject
+//    @Override
+//    public String approveProject(int projectId) {
+//        Optional<Project> tempProject= projectRepository.findById(projectId);
+//        if(tempProject.isPresent()){
+//            Project project=tempProject.get();
+//            project.setApproved(true);
+//            projectRepository.save(project);
+//            return "The project approved";
+//        }
+//        return "The project does not exist";
+//    }
+
+    //This function helps to find a team available on a new project time
+    //If the dates available, send confirmation email to the company
+    //if not, search for earliest available time and send a regret email
     @Override
-    public String approveProject(int projectId) {
-        Optional<Project> tempProject= projectRepository.findById(projectId);
-        if(tempProject.isPresent()){
-            Project project=tempProject.get();
-            project.setApproved(true);
-            projectRepository.save(project);
-            return "The project approved";
+    public Boolean checkForProjectAvailability(int departmentId, Project newProject, Company company, Boolean isDelay) {
+        LocalDateTime newStart = newProject.getStartDate();
+        LocalDateTime newEnd = newProject.getEndDate();
+        long projectDuration=newStart.until(newEnd, ChronoUnit.DAYS);
+        LocalDateTime latestEnd = LocalDateTime.MIN;
+        LocalDateTime suggestedStartDate=null;
+        LocalDateTime suggestedEnd=null;
+        String departmentName=newProject.getDepartment().getName();
+        Optional<Department> tempDepartment = departmentRepository.findById(departmentId);
+        if (tempDepartment.isPresent()) {
+            Department department = tempDepartment.get();
+            List<Team> teams = department.getTeams();
+
+            for (Team team : teams) {
+                boolean isAvailable = true;
+                for (Project existingProject : team.getProjects()) {
+                    if (!(existingProject.getEndDate().isBefore(newStart) || existingProject.getStartDate().isAfter(newEnd))) {
+                        // There's a project in the same time
+                        isAvailable = false;
+                        if (existingProject.getEndDate().isAfter(latestEnd)) {
+                            latestEnd = existingProject.getEndDate();
+                        }
+                        break;
+                    }
+                }
+                if (isAvailable) {
+                    //Assign the project to the available team
+                    newProject.setAssignedTeam(team);
+                    newProject.setApproved(true);
+                    projectRepository.save(newProject);
+                    //Sending an email for the company
+                    String body  = "Dear " + company.getName() + ",\n\n" +
+                            "We are pleased to inform you that your project titled \"" + newProject.getTitle() + "\" has been successfully reviewed and accepted by our team.\n\n" +
+                            "The project is now scheduled to begin on " + newProject.getStartDate() + " and will be handled by one of our specialized teams in the " + department.getName() + " department.\n" +
+                            "Our team will reach out to you shortly for any additional coordination or clarification if needed.\n\n" +
+                            "We look forward to collaborating with you and ensuring the success of your project.\n\n" +
+                            "If you have any questions or need further assistance, feel free to contact us.\n\n" +
+                            "Best regards,\n" +
+                            "Task Manager Team";
+
+                    Email email = new Email(company.getEmail(), body, "Project Approved!");
+                    if(!isDelay){
+                        emailService.sendSimpleMail(email);
+                    }
+                    return true; // Team is free in the given date range
+                }
+                else{
+                    if (suggestedStartDate == null || latestEnd.isBefore(suggestedStartDate)) {
+                        suggestedStartDate = latestEnd.plusDays(1);
+
+                    }
+                     suggestedEnd = suggestedStartDate.plusDays(projectDuration);
+
+                }
+            }
         }
-        return "The project does not exist";
+        //No available teams at the assigned date
+        //reject the project
+
+        //check for the first available date suggested to start the project on it
+        String body = "Dear " + company.getName() + ",\n\n" +
+                "We regret to inform you that your project titled \"" + newProject.getTitle() + "\" cannot be accepted at the originally requested time due to team unavailability.\n\n" +
+                "However, we highly value your collaboration, and we are pleased to suggest a new start date: " + suggestedStartDate + ", with an estimated end date of " + suggestedEnd + ".\n" +
+                "This timeline aligns with the availability of our team in the " + departmentName + " department.\n\n" +
+                "You can confirm, request a delay, or cancel the project through our company website.\n\n" +
+                "If you have any questions or need further assistance, feel free to contact us.\n\n" +
+                "Best regards,\n" +
+                "Task Manager Team";
+
+        Email email = new Email(company.getEmail(), body, "Project Rescheduling Suggestion");
+        emailService.sendSimpleMail(email);
+        newProject.setApproved(false);
+        newProject.setStartDate(suggestedStartDate);
+        newProject.setEndDate(suggestedEnd);
+        projectRepository.save(newProject);
+        return false;
     }
+
+    //Used if the project time is not available, the company can delay it or cancel
+    @Override
+    public String cancelOrDelayProject(int projectId, String decision, Company company) {
+        Optional<Project> tempProject = projectRepository.findById(projectId);
+        if (tempProject.isPresent()) {
+            Project project = tempProject.get();
+            Company projectCompany=project.getCompany();
+            Department dep=project.getDepartment();
+
+            //check for company authorization
+            if(projectCompany==company){
+                if(decision.equals("cancel")){
+                    projectRepository.delete(project);
+                    return "Project Canceled";
+                }
+                else if(decision.equals("delay")){
+                    if(checkForProjectAvailability(dep.getId(),project,company,true)){
+                        project.setApproved(true);
+                        projectRepository.save(project);
+                        return "The project added successfully";
+                    }
+                    else{
+                        return "The project is not added!";
+                    }
+
+                }
+
+            }
+            else{
+                //not the project company
+                return "This company does not own this project";
+            }
+        }
+        return "This project does not exist";
+
+    }
+
+    //To get the company pending projects, to see the suggested new dates
+    @Override
+    public List<Project> getCompanyPendingProjects(Company company) {
+        List<Project> projects = company.getProjects();
+        List<Project> pendingProjects = new ArrayList<Project>();
+        for (Project project : projects) {
+            if (!project.getApproved()) {
+                pendingProjects.add(project);
+
+            }
+        }
+        return pendingProjects;
+    }
+
+
 }
