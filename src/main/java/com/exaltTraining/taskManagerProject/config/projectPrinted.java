@@ -2,6 +2,7 @@ package com.exaltTraining.taskManagerProject.config;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 //Helper class used to specify the form of returning project
 public class projectPrinted {
@@ -12,6 +13,7 @@ public class projectPrinted {
     private DepartmentPrinted department;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private List<taskPrinted> tasks;
 
 
     public projectPrinted(int projectId, String name, String description, LocalDateTime startTime, LocalDateTime endTime) {
@@ -20,6 +22,7 @@ public class projectPrinted {
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
+
     }
 
     public projectPrinted(int projectId, String name, String description, companyPrinted company, DepartmentPrinted department) {
@@ -28,6 +31,25 @@ public class projectPrinted {
         this.description = description;
         this.company = company;
         this.department = department;
+    }
+
+    public projectPrinted(int projectId, String name, String description, companyPrinted company, DepartmentPrinted department, LocalDateTime startTime, LocalDateTime endTime, List<taskPrinted> tasks) {
+        this.projectId = projectId;
+        this.name = name;
+        this.description = description;
+        this.company = company;
+        this.department = department;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.tasks = tasks;
+    }
+
+    public List<taskPrinted> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<taskPrinted> tasks) {
+        this.tasks = tasks;
     }
 
     public LocalDateTime getStartTime() {

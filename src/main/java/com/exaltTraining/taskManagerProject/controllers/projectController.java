@@ -4,6 +4,7 @@ import com.exaltTraining.taskManagerProject.config.*;
 import com.exaltTraining.taskManagerProject.entities.*;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import com.exaltTraining.taskManagerProject.services.ProjectService;
+import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +19,11 @@ public class projectController {
     private JwtService jwtService;
     private ProjectService projectService;
     private CompanyService companyService;
-    public projectController(ProjectService projectService, CompanyService companyService) {
+    private UserService userService;
+    public projectController(ProjectService projectService, CompanyService companyService, UserService userService) {
         this.projectService = projectService;
         this.companyService = companyService;
+        this.userService = userService;
     }
 
     //Add a new project by a company API
@@ -138,6 +141,58 @@ public class projectController {
                 .collect(Collectors.toList());
 
         return projectP;
+
+    }
+
+    @GetMapping("/projects/{status}")
+    public List<projectPrinted> getTeamActiveProject(@PathVariable String status,@RequestHeader ("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String userEmail=jwtService.extractUsername(token);
+        User teamLeader = userService.findUserByEmail(userEmail);
+        if(!"team_manager".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Project> projects = projectService.getTeamProjects(teamLeader, status);
+
+        List<projectPrinted> printedProjects = projects.stream().map(tempProject -> {
+            Company company = tempProject.getCompany();
+            companyPrinted cpr = new companyPrinted(
+                    company.getId(),
+                    company.getName(),
+                    company.getEmail()
+            );
+
+            Department department = tempProject.getDepartment();
+            DepartmentPrinted departmentP = new DepartmentPrinted(
+                    department.getId(),
+                    department.getName()
+            );
+
+            List<taskPrinted> printedTasks = tempProject.getTasks().stream()
+                    .map(task -> new taskPrinted(
+                            task.getId(),
+                            task.getDescription(),
+                            task.getTitle(),
+                            task.getStatus().toString(),
+                            task.getDeadline()
+                    ))
+                    .collect(Collectors.toList());
+
+            return new projectPrinted(
+                    tempProject.getId(),
+                    tempProject.getTitle(),
+                    tempProject.getDescription(),
+                    cpr,
+                    departmentP,
+                    tempProject.getStartDate(),
+                    tempProject.getEndDate(),
+                    printedTasks
+            );
+        }).collect(Collectors.toList());
+
+        return printedProjects;
+
 
     }
 

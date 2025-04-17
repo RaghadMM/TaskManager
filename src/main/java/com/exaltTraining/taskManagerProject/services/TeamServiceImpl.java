@@ -7,6 +7,7 @@ import com.exaltTraining.taskManagerProject.entities.Team;
 import com.exaltTraining.taskManagerProject.entities.User;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,5 +97,54 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
+    }
+
+    //To delete a team by the department manager
+    //The function checks that the team is really assigned with the department manager department
+    @Override
+    public String deleteTeam(int teamId, User departmentManager) {
+        Team team = teamRepository.findById(teamId).get();
+        if(team.getDepartment()== departmentManager.getDepartment())
+        {
+            try{
+                teamRepository.deleteById(teamId);
+                return "Team has been deleted";
+            }
+            catch(Exception e){
+                return "Error while deleting team";
+            }
+        }
+        else{
+            return "The team is not assigned with this department!";
+        }
+
+    }
+
+    //Get a team info by team id
+    @Override
+    public Team getTeam(int teamId) {
+        Team team = teamRepository.findById(teamId).get();
+        if(team!=null){
+            return team;
+        }
+        else{
+            return null;
+        }
+
+    }
+
+    //Get available members in a team by the team leader
+    @Override
+    public List<User> getAvailableTeamMembers(User teamLeader) {
+        Team team = teamRepository.findTeamByTeamLeader(teamLeader);
+        List<User> members = team.getTeamMembers();
+        List<User> availableMembers = new ArrayList<>();
+        for(User user : members){
+            if(user.getStatus() == User.Status.Available){
+                availableMembers.add(user);
+
+            }
+        }
+        return availableMembers;
     }
 }

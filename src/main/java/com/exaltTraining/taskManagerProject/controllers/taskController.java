@@ -1,14 +1,21 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
 import com.exaltTraining.taskManagerProject.config.JwtService;
+import com.exaltTraining.taskManagerProject.config.UserPrinted;
+import com.exaltTraining.taskManagerProject.config.taskPrinted;
 import com.exaltTraining.taskManagerProject.entities.Company;
 import com.exaltTraining.taskManagerProject.entities.Task;
+import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import com.exaltTraining.taskManagerProject.services.TaskService;
+import com.exaltTraining.taskManagerProject.services.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/taskManager")
@@ -18,10 +25,12 @@ public class taskController {
     private JwtService jwtService;
     private TaskService taskService;
     private CompanyService companyService;
+    private UserService userService;
 
-    public taskController(TaskService taskService, CompanyService companyService) {
+    public taskController(TaskService taskService, CompanyService companyService, UserService userService) {
         this.taskService = taskService;
         this.companyService = companyService;
+        this.userService = userService;
     }
 
     //Add new task to a project API
@@ -51,7 +60,70 @@ public class taskController {
         else{
             return "The company is not approved yet.";
         }
+    }
+    //Assign task to a member API
+    @PutMapping("/task/{taskId}/member/{memberId}")
+    public String assignATaskToMember(@PathVariable int taskId, @PathVariable int memberId, @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String username = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(username);
+        if(!"team_manager".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only team leaders accounts can assign tasks.";
+        }
+        String result = taskService.assignTaskToAMember(taskId,memberId,user);
+        return result;
 
+    }
+    //Get pending tasks API
+    @GetMapping("/pendingTasks")
+    public List<taskPrinted> getPendingTasks(@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String username = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(username);
+        if(!"team_manager".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Task> tasks = taskService.getTeamBendingTasks(user);
+        List<taskPrinted> taskPrinteds = tasks.stream()
+                .map(task -> new taskPrinted(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getStatus().toString(),
+                        task.getDeadline()
+                ))
+                .collect(Collectors.toList());
+
+        return taskPrinteds;
+    }
+    //Delete a pending task API
+    @DeleteMapping("/task/{taskId}")
+    public String deleteTask(@PathVariable int taskId, @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String username = jwtService.extractUsername(token);
+        Company company = companyService.findCompanyByEmail(username);
+        if(!"company".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only Companies accounts can delete tasks.";
+        }
+        String result = taskService.deleteTaskFromAProject(taskId,company);
+        return result;
+    }
+
+    //Mark a task as done by the employee
+    @PutMapping("/task/{taskId}")
+    public String updateTaskStatus(@PathVariable int taskId, @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String username = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(username);
+        if(!"employee".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only Employee accounts can update tasks.";
+        }
+        String result=taskService.updateTaskStatus(taskId,user);
+        return result;
 
     }
 }
