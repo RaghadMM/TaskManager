@@ -2,6 +2,7 @@ package com.exaltTraining.taskManagerProject.services;
 
 import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
 import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
+import com.exaltTraining.taskManagerProject.dao.TeamRepository;
 import com.exaltTraining.taskManagerProject.entities.*;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRepository projectRepository;
     private DepartmentRepository departmentRepository;
+    private TeamRepository teamRepository;
     private EmailService emailService;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, DepartmentRepository departmentRepository, EmailService emailService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, DepartmentRepository departmentRepository, EmailService emailService,TeamRepository teamRepository) {
         this.projectRepository = projectRepository;
         this.departmentRepository = departmentRepository;
         this.emailService = emailService;
+        this.teamRepository = teamRepository;
     }
 
     //Add a new project by external approved companies
@@ -223,6 +226,20 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
         return pendingProjects;
+    }
+
+    //To get team related projects based on its status, pending, in_process or finished
+    @Override
+    public List<Project> getTeamProjects(User teamLeader, String status) {
+
+        Team team = teamRepository.findTeamByTeamLeader(teamLeader);
+        List<Project> projects = new ArrayList<>();
+        for (Project project : team.getProjects()) {
+            if (project.getStatus().equals(status)) {
+                projects.add(project);
+            }
+        }
+        return projects;
     }
 
 

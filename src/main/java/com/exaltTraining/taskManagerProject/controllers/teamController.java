@@ -119,7 +119,80 @@ public class teamController {
             return new teamPrinted(team.getId(), team.getName(), leader,dep);
         }).collect(Collectors.toList());
 
+    }
+    //Delete a team
+    @DeleteMapping("/team/{teamId}")
+    public String deleteTeam(@PathVariable int teamId, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(username);
+        String role = jwtService.extractUserRole(token);
+        if (!"department_manager".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only department managers can delete teams.";
+        }
+        String result = teamService.deleteTeam(teamId, user);
+        if(result!=null) {
+            return result;
+        }
+        else {
+            return "Cant delete Team";
+        }
+    }
+    //Get team members
+    @GetMapping("/team/{teamId}")
+    public teamPrinted getTeam( @PathVariable int teamId,@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        String role = jwtService.extractUserRole(token);
+        User user = userService.findUserByEmail(username);
+        Team theTeam = teamService.getTeam(teamId);
+        if (theTeam.getTeamLeader()!= user || theTeam==null || !"team_manager".equalsIgnoreCase(role)) {
+            return null;
+        }
+        //The team members
+        List<User> members=theTeam.getTeamMembers();
+        List<UserPrinted> printedMembers = theTeam.getTeamMembers().stream()
+                .map(member -> new UserPrinted(
+                        member.getId(),
+                        member.getFirstName(),
+                        member.getLastName(),
+                        member.getEmail()
+                ))
+                .collect(Collectors.toList());
 
+        teamPrinted printedTeam = new teamPrinted(
+                theTeam.getId(),
+                theTeam.getName(),
+                new UserPrinted(
+                        theTeam.getTeamLeader().getId(),
+                        theTeam.getTeamLeader().getFirstName(),
+                        theTeam.getTeamLeader().getLastName(),
+                        theTeam.getTeamLeader().getEmail()
+                ),
+                new DepartmentPrinted(
+                        theTeam.getDepartment().getId(),
+                        theTeam.getDepartment().getName()
+                ),
+                printedMembers
+        );
+        return printedTeam;
+
+    }
+    @GetMapping("/availableMembers")
+    public List<UserPrinted> getAllAvailableUsers(@RequestHeader ("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(username);
+        List<User> availableUsers= teamService.getAvailableTeamMembers(user);
+        List<UserPrinted> printedMembers = availableUsers.stream()
+                .map(member -> new UserPrinted(
+                        member.getId(),
+                        member.getFirstName(),
+                        member.getLastName(),
+                        member.getEmail()
+                ))
+                .collect(Collectors.toList());
+        return printedMembers;
     }
 
 }

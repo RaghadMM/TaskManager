@@ -29,6 +29,9 @@ public class Project {
     @Column(name="end_date")
     private LocalDateTime endDate;
 
+    @Column(name = "status")
+    private String status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="company_id")
     private Company company;
@@ -48,13 +51,22 @@ public class Project {
     public Project() {
     }
 
-    public Project(int id, String title, String description, Boolean approved, LocalDateTime startDate, LocalDateTime endDate, Team assignedTeam, List<Task> tasks) {
+    public Project(int id, String title, String description, Boolean approved, LocalDateTime startDate, LocalDateTime endDate, Team assignedTeam, List<Task> tasks,String status) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.approved = approved;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.assignedTeam = assignedTeam;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public List<Task> getTasks() {
