@@ -147,4 +147,10 @@ public class TeamServiceImpl implements TeamService {
         }
         return availableMembers;
     }
+
+    @Override
+    public List<Team> searchTeams(String query) {
+        List<Team> teams=teamRepository.searchTeams(query);
+        return teams;
+    }
 }

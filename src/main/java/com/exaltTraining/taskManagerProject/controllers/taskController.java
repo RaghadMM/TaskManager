@@ -1,9 +1,8 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
-import com.exaltTraining.taskManagerProject.config.JwtService;
-import com.exaltTraining.taskManagerProject.config.UserPrinted;
-import com.exaltTraining.taskManagerProject.config.taskPrinted;
+import com.exaltTraining.taskManagerProject.config.*;
 import com.exaltTraining.taskManagerProject.entities.Company;
+import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.Task;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
@@ -11,6 +10,7 @@ import com.exaltTraining.taskManagerProject.services.TaskService;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,17 +86,8 @@ public class taskController {
             return null;
         }
         List<Task> tasks = taskService.getTeamBendingTasks(user);
-        List<taskPrinted> taskPrinteds = tasks.stream()
-                .map(task -> new taskPrinted(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getStatus().toString(),
-                        task.getDeadline()
-                ))
-                .collect(Collectors.toList());
 
-        return taskPrinteds;
+        return printTask(tasks);
     }
     //Delete a pending task API
     @DeleteMapping("/task/{taskId}")
@@ -124,6 +115,34 @@ public class taskController {
         }
         String result=taskService.updateTaskStatus(taskId,user);
         return result;
+
+    }
+    @GetMapping("/tasks/search")
+    public ResponseEntity<List<taskPrinted>> searchTasks(@RequestParam("query") String query, @RequestHeader ("Authorization") String authHeader ) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Task> tasks = taskService.searchTasks(query);
+
+        return ResponseEntity.ok(printTask(tasks));
+    }
+
+    // A helper function to form the list of tasks returned
+    private List<taskPrinted> printTask(List <Task> tasks) {
+
+        List<taskPrinted> taskPrinteds = tasks.stream()
+                .map(task -> new taskPrinted(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getStatus().toString(),
+                        task.getDeadline()
+                ))
+                .collect(Collectors.toList());
+
+        return taskPrinteds;
 
     }
 }

@@ -6,6 +6,7 @@ import com.exaltTraining.taskManagerProject.entities.Company;
 import com.exaltTraining.taskManagerProject.entities.LoginRequest;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -82,16 +83,8 @@ public class companyController {
         if(companies==null){
             return null;
         }
-        List<companyPrinted> companyP = companies.stream()
-                .map(company -> new companyPrinted(
-                        company.getId(),
-                        company.getName(),
-                        company.getEmail(),
-                        company.getApproved()
-                ))
-                .collect(Collectors.toList());
 
-        return companyP;
+        return printCompanies(companies);
     }
 
     //Get approved companies API
@@ -106,16 +99,7 @@ public class companyController {
         if(companies==null){
             return null;
         }
-        List<companyPrinted> companyP = companies.stream()
-                .map(company -> new companyPrinted(
-                        company.getId(),
-                        company.getName(),
-                        company.getEmail(),
-                        company.getApproved()
-                ))
-                .collect(Collectors.toList());
-
-        return companyP;
+        return printCompanies(companies);
     }
     //Delete a company with projects
     @DeleteMapping("/company/{companyId}")
@@ -134,5 +118,32 @@ public class companyController {
         }
 
     }
+
+    //Search companies API
+    @GetMapping("/companies/search")
+    public ResponseEntity<List<companyPrinted>> searchCompanies(@RequestParam("query") String query, @RequestHeader ("Authorization") String authHeader ) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Company> companies = companyService.searchCompanies(query);
+        return ResponseEntity.ok(printCompanies(companies));
+    }
+
+    // A helper function to form the list of companies returned
+    private List<companyPrinted> printCompanies(List <Company> companies) {
+        List<companyPrinted> companyP = companies.stream()
+                .map(company -> new companyPrinted(
+                        company.getId(),
+                        company.getName(),
+                        company.getEmail(),
+                        company.getApproved()
+                ))
+                .collect(Collectors.toList());
+        return companyP;
+
+    }
+
 
 }

@@ -13,6 +13,7 @@ public interface ProjectService {
     String cancelOrDelayProject(int projectId, String decision, Company company);
     List<Project> getCompanyPendingProjects(Company company);
     List<Project> getTeamProjects(User teamLeader, String status);
+    List<Project> searchProjects(String query);
 
 
 }

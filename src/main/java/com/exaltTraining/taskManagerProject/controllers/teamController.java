@@ -1,16 +1,12 @@
 package com.exaltTraining.taskManagerProject.controllers;
 
-import com.exaltTraining.taskManagerProject.config.DepartmentPrinted;
-import com.exaltTraining.taskManagerProject.config.JwtService;
-import com.exaltTraining.taskManagerProject.config.UserPrinted;
-import com.exaltTraining.taskManagerProject.config.teamPrinted;
+import com.exaltTraining.taskManagerProject.config.*;
 import com.exaltTraining.taskManagerProject.dao.TeamRepository;
-import com.exaltTraining.taskManagerProject.entities.Department;
-import com.exaltTraining.taskManagerProject.entities.Team;
-import com.exaltTraining.taskManagerProject.entities.User;
+import com.exaltTraining.taskManagerProject.entities.*;
 import com.exaltTraining.taskManagerProject.services.TeamService;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -107,17 +103,7 @@ public class teamController {
     @GetMapping("/teams")
     public List<teamPrinted> getAllTeams() {
         List<Team> teams = teamService.getAllTeams();
-        return teams.stream().map(team -> {
-            //team leader
-            User manager = team.getTeamLeader();
-            UserPrinted leader = new UserPrinted(manager.getId(), manager.getFirstName(),manager.getLastName(),manager.getEmail(),manager.getRole().toString(),manager.getStatus().toString());
-            //department + department manager
-            Department department = team.getDepartment();
-            User depManager = department.getManager();
-            UserPrinted departmentManager = new UserPrinted(depManager.getId(), depManager.getFirstName(),depManager.getLastName(),depManager.getEmail());
-            DepartmentPrinted dep= new DepartmentPrinted(department.getId(),department.getName(),departmentManager);
-            return new teamPrinted(team.getId(), team.getName(), leader,dep);
-        }).collect(Collectors.toList());
+        return printTeam(teams);
 
     }
     //Delete a team
@@ -193,6 +179,50 @@ public class teamController {
                 ))
                 .collect(Collectors.toList());
         return printedMembers;
+    }
+    @GetMapping("/teams/search")
+    public ResponseEntity<List<teamPrinted>> searchTeams(@RequestParam("query") String query, @RequestHeader ("Authorization") String authHeader ) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Team> teams = teamService.searchTeams(query);
+
+
+        return ResponseEntity.ok(printTeam(teams));
+    }
+
+    // A helper function to form the list of teams returned
+    private List<teamPrinted> printTeam(List <Team> teams) {
+
+        List<teamPrinted> teamPrinteds = teams.stream()
+                .map(team -> new teamPrinted(
+                        team.getId(),
+                        team.getName(),
+                        new UserPrinted(
+                                team.getTeamLeader().getId(),
+                                team.getTeamLeader().getFirstName(),
+                                team.getTeamLeader().getLastName(),
+                                team.getTeamLeader().getEmail()
+                        ),
+                        new DepartmentPrinted(
+                                team.getDepartment().getId(),
+                                team.getDepartment().getName()
+                        ),
+                        team.getTeamMembers().stream()
+                                .map(member -> new UserPrinted(
+                                        member.getId(),
+                                        member.getFirstName(),
+                                        member.getLastName(),
+                                        member.getEmail()
+                                ))
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+
+        return teamPrinteds;
+
     }
 
 }

@@ -12,4 +12,5 @@ public interface TaskService {
     List<Task> getTeamBendingTasks(User teamLeader);
     String deleteTaskFromAProject(int taskId, Company company);
     String updateTaskStatus(int taskId, User employee);
+    List<Task> searchTasks(String query);
 }

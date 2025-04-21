@@ -3,10 +3,13 @@ package com.exaltTraining.taskManagerProject.controllers;
 import com.exaltTraining.taskManagerProject.config.DepartmentPrinted;
 import com.exaltTraining.taskManagerProject.config.JwtService;
 import com.exaltTraining.taskManagerProject.config.UserPrinted;
+import com.exaltTraining.taskManagerProject.config.companyPrinted;
+import com.exaltTraining.taskManagerProject.entities.Company;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -114,6 +117,34 @@ public class departmentController {
         else {
             return "Cant delete the department";
         }
+    }
+    @GetMapping("/departments/search")
+    public ResponseEntity<List<DepartmentPrinted>> searchDepartments(@RequestParam("query") String query, @RequestHeader ("Authorization") String authHeader ) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Department> departments = departmentService.searchDepartments(query);
+        return ResponseEntity.ok(printDepartments(departments));
+    }
+
+    // A helper function to form the list of departments returned
+    private List<DepartmentPrinted> printDepartments(List <Department> departments) {
+        List<DepartmentPrinted> departmentPrinteds = departments.stream()
+                .map(department -> new DepartmentPrinted(
+                        department.getId(),
+                        department.getName(),
+                        new UserPrinted(
+                                department.getManager().getId(),
+                                department.getManager().getFirstName(),
+                                department.getManager().getLastName(),
+                                department.getManager().getEmail()
+                        )
+                ))
+                .collect(Collectors.toList());
+        return departmentPrinteds;
+
     }
 
 }

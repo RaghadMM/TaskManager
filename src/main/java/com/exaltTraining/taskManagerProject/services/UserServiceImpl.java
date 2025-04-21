@@ -105,4 +105,10 @@ public class UserServiceImpl implements UserService {
         }
         return "Unauthorized user";
     }
+
+    @Override
+    public List<User> searchUsers(String query) {
+        List<User> users=userRepository.searchUser(query);
+        return users;
+    }
 }
