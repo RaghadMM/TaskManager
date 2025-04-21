@@ -1,9 +1,11 @@
 package com.exaltTraining.taskManagerProject.dao;
 
+import com.exaltTraining.taskManagerProject.entities.Company;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.Project;
 import com.exaltTraining.taskManagerProject.entities.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -11,4 +13,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
     List<Project> getProjectsByApproved(Boolean approved);
 
     Project findProjectByTasks(List<Task> tasks);
+    @Query("SELECT p FROM Project p WHERE " +
+            "p.title LIKE CONCAT('%',:query, '%')" +
+            "Or p.description LIKE CONCAT('%', :query, '%')")
+    List<Project> searchProjects(String query);
 }

@@ -6,6 +6,8 @@ import com.exaltTraining.taskManagerProject.services.CompanyService;
 import com.exaltTraining.taskManagerProject.services.ProjectService;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -155,6 +157,27 @@ public class projectController {
         }
         List<Project> projects = projectService.getTeamProjects(teamLeader, status);
 
+
+
+        return printProjects(projects);
+
+
+    }
+
+    @GetMapping("/projects/search")
+    public ResponseEntity<List<projectPrinted>> searchProjects(@RequestParam("query") String query, @RequestHeader ("Authorization") String authHeader ) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Project> projects = projectService.searchProjects(query);
+
+        return ResponseEntity.ok(printProjects(projects));
+    }
+
+    // A helper function to form the list of projects returned
+    private List<projectPrinted> printProjects(List <Project> projects) {
         List<projectPrinted> printedProjects = projects.stream().map(tempProject -> {
             Company company = tempProject.getCompany();
             companyPrinted cpr = new companyPrinted(
@@ -190,22 +213,8 @@ public class projectController {
                     printedTasks
             );
         }).collect(Collectors.toList());
-
         return printedProjects;
 
-
     }
-
-//    //Approve project API
-//    @PutMapping("/project/{projectId}")
-//    public String approveProject(@PathVariable int projectId, @RequestHeader("Authorization") String authHeader){
-//        String token = authHeader.substring(7);
-//        String role = jwtService.extractUserRole(token);
-//        if (!"admin".equalsIgnoreCase(role)) {
-//            return null;
-//        }
-//        String result=projectService.approveProject(projectId);
-//        return result;
-//    }
 
 }

@@ -11,4 +11,5 @@ public interface UserService {
     User findUserByEmail(String email);
     List<User> getAllUsers();
     String resetPassword(int userId,String email, PasswordResetForm form);
+    List<User> searchUsers(String query);
 }

@@ -97,4 +97,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
     }
 
+    @Override
+    public List<Department> searchDepartments(String query) {
+        List<Department> departments=repository.searchDepartments(query);
+        return departments;
+    }
+
 }

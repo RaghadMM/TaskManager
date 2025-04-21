@@ -4,6 +4,7 @@ import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
 import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
 import com.exaltTraining.taskManagerProject.dao.TeamRepository;
 import com.exaltTraining.taskManagerProject.entities.*;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -239,6 +240,12 @@ public class ProjectServiceImpl implements ProjectService {
                 projects.add(project);
             }
         }
+        return projects;
+    }
+
+    @Override
+    public List<Project> searchProjects(String query) {
+        List <Project> projects=projectRepository.searchProjects(query);
         return projects;
     }
 

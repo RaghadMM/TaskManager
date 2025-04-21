@@ -14,5 +14,6 @@ public interface TeamService {
     String deleteTeam(int teamId, User departmentManager);
     Team getTeam(int teamId);
     List<User> getAvailableTeamMembers(User teamLeader);
+    List<Team> searchTeams(String query);
 
 }

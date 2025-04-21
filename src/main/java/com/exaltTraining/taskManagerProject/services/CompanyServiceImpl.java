@@ -151,4 +151,11 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
+    //Search a company by its name or email
+    @Override
+    public List<Company> searchCompanies(String query) {
+        List <Company> companies=companyRepository.searchCompanies(query);
+        return companies;
+    }
+
 }

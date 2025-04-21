@@ -154,4 +154,10 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Override
+    public List<Task> searchTasks(String query) {
+        List<Task> tasks=taskRepository.searchTasks(query);
+        return tasks;
+    }
+
 }
