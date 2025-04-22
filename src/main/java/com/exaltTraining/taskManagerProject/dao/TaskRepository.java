@@ -13,4 +13,6 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
             "t.title LIKE CONCAT('%',:query, '%')" +
             "Or t.description LIKE CONCAT('%', :query, '%')")
     List<Task> searchTasks (String query);
+
+    List<Task> getTasksByStatus(Task.Status status);
 }

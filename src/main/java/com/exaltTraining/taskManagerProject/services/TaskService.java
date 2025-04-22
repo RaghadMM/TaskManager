@@ -13,4 +13,5 @@ public interface TaskService {
     String deleteTaskFromAProject(int taskId, Company company);
     String updateTaskStatus(int taskId, User employee);
     List<Task> searchTasks(String query);
+    List<Task> getTasksByStatus(User user,String status);
 }

@@ -47,6 +47,18 @@ public class User {
     @JoinColumn(name="assigned_user_id")
     private List<Task> assignedTasks;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name="reviewer_id")
+    private List<Review> reviews;
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
     public List<Task> getAssignedTasks() {
         return assignedTasks;
     }

@@ -14,6 +14,7 @@ public interface ProjectService {
     List<Project> getCompanyPendingProjects(Company company);
     List<Project> getTeamProjects(User teamLeader, String status);
     List<Project> searchProjects(String query);
+    String changeProjectStatus(int projectId, String status, User teamLeader);
 
 
 }

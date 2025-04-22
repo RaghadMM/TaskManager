@@ -4,7 +4,6 @@ import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
 import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
 import com.exaltTraining.taskManagerProject.dao.TeamRepository;
 import com.exaltTraining.taskManagerProject.entities.*;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -245,9 +244,53 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<Project> searchProjects(String query) {
-        List <Project> projects=projectRepository.searchProjects(query);
-        return projects;
+        return projectRepository.searchProjects(query);
     }
 
+    //Change project status by the team leader
+    //Finished if all tasks are checked
+    @Override
+    public String changeProjectStatus(int projectId, String status, User teamLeader) {
+        try{
+            Project project = projectRepository.findById(projectId).get();
+            if(project.getAssignedTeam().getTeamLeader().equals(teamLeader)){
+                if(status.equals("finished")){
+                    List<Task> tasks = project.getTasks();
+                    System.out.println(tasks);
+                    boolean isFinished = true;
+                    for (Task task : tasks) {
+                        if(task.getStatus()!= Task.Status.CHECKED){
+                            isFinished = false;
+                            break;
+                        }
 
+                    }
+                    if(isFinished){
+                        project.setStatus("finished");
+                        projectRepository.save(project);
+                        return "Project Updated Successfully";
+                    }
+                    else{
+                        return "The project tasks are not finished!";
+                    }
+                }
+                else if(status.equals("in-process")){
+                    project.setStatus("in_process");
+                    projectRepository.save(project);
+                    return "Project Updated Successfully";
+
+                }
+                else{
+                    return "Unknown status";
+                }
+            }
+            else{
+                return "This project is not assigned to this team";
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return "Error";
+        }
+    }
 }

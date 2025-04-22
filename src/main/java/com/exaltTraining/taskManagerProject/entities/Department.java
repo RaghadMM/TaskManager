@@ -15,6 +15,10 @@ public class Department {
     @Column(name="name")
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="type")
+    private Type type;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="department_id")
     private List<User> tasks;
@@ -31,9 +35,18 @@ public class Department {
     @JoinColumn(name="department_id")
     List<Project> projects;
 
+
+
     public Department() {
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public Department(String name) {
         this.name = name;
@@ -95,5 +108,10 @@ public class Department {
                 ", tasks=" + tasks +
                 ", manager=" + manager +
                 '}';
+    }
+    public enum Type {
+        QA,
+        SOFTWARE,
+        HARDWARE
     }
 }
