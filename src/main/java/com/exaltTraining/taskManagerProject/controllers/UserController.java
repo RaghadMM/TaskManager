@@ -39,6 +39,7 @@ public class UserController {
             userService.registerUser(user);
         }
         catch(Exception e){
+            e.printStackTrace();
             return "Error creating user: check for email validation ";
         }
         return "User registered successfully";
@@ -104,6 +105,4 @@ public class UserController {
         return userPrinteds;
 
     }
-
-
 }

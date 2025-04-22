@@ -7,10 +7,7 @@ import com.exaltTraining.taskManagerProject.dao.UserRepository;
 import com.exaltTraining.taskManagerProject.entities.*;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -156,8 +153,54 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> searchTasks(String query) {
-        List<Task> tasks=taskRepository.searchTasks(query);
-        return tasks;
+        return taskRepository.searchTasks(query);
+    }
+
+    //Get tasks by their status
+    //Done tasks can be retrieved by their employee, or by QA employee to check them
+    //Reviewed task can be retrieved by their employee
+    @Override
+    public List<Task> getTasksByStatus(User user, String status) {
+        Department userDepartment = user.getDepartment();
+
+        List <Task> returnedTasks = new ArrayList<>();
+        //DONE
+        if(status.equals("DONE")){
+            List<Task> doneTasks= taskRepository.getTasksByStatus(Task.Status.DONE);
+            if(userDepartment.getType()== Department.Type.QA){
+                for(Task task : doneTasks){
+                    if(task.getProject().getDepartment().getType()== Department.Type.SOFTWARE){
+                        returnedTasks.add(task);
+                    }
+                }
+            }
+            else{
+                for(Task task : doneTasks){
+                    if(task.getAssignedUser().equals(user)){
+                        returnedTasks.add(task);
+                    }
+                }
+            }
+        }
+        else if(status.equals("REVIEWED")){
+            List<Task> doneTasks= taskRepository.getTasksByStatus(Task.Status.REVIEWED);
+            if(userDepartment.getType()== Department.Type.SOFTWARE){
+                for(Task task : doneTasks){
+                    if(task.getAssignedUser().equals(user)){
+                        returnedTasks.add(task);
+                    }
+                }
+            }
+            else{
+                return null;
+            }
+
+        }
+        else{
+            return null;
+        }
+
+        return returnedTasks;
     }
 
 }

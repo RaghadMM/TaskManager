@@ -2,16 +2,13 @@ package com.exaltTraining.taskManagerProject.controllers;
 
 import com.exaltTraining.taskManagerProject.config.*;
 import com.exaltTraining.taskManagerProject.entities.Company;
-import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.Task;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import com.exaltTraining.taskManagerProject.services.TaskService;
 import com.exaltTraining.taskManagerProject.services.UserService;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -127,6 +124,16 @@ public class taskController {
         List<Task> tasks = taskService.searchTasks(query);
 
         return ResponseEntity.ok(printTask(tasks));
+    }
+
+    //Get tasks by status API
+    @GetMapping("/tasks/{status}")
+    public List<taskPrinted> getTasksByStatus(@PathVariable String status, @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String email = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(email);
+        List<Task> tasks = taskService.getTasksByStatus(user,status);
+         return printTask(tasks);
     }
 
     // A helper function to form the list of tasks returned

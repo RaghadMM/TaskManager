@@ -3,6 +3,7 @@ package com.exaltTraining.taskManagerProject.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="task")
@@ -33,6 +34,10 @@ public class Task {
     @JoinColumn(name="project_id")
     private Project project;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="task_id")
+    private List<Review> reviews;
+
     public Task() {
     }
 
@@ -42,6 +47,14 @@ public class Task {
         this.description = description;
         this.status = status;
         this.deadline = deadline;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 
     public int getId() {
@@ -104,6 +117,8 @@ public class Task {
         TODO,
         IN_PROGRESS,
         DONE,
+        REVIEWED,
+        CHECKED
     }
 }
 

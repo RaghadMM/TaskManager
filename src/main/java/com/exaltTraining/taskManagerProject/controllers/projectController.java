@@ -176,6 +176,20 @@ public class projectController {
         return ResponseEntity.ok(printProjects(projects));
     }
 
+    //Change project status API
+    @PutMapping("/project/changeStatus/{projectId}/{status}")
+    public String changeProjectStatus(@PathVariable int projectId, @PathVariable String status, @RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String email=jwtService.extractUsername(token);
+        User teamLeader = userService.findUserByEmail(email);
+        if (!"team_manager".equalsIgnoreCase(role)) {
+            return "Unauthorized: Only team leaders accounts can change projects status.";
+        }
+        return projectService.changeProjectStatus(projectId,status,teamLeader);
+
+    }
+
     // A helper function to form the list of projects returned
     private List<projectPrinted> printProjects(List <Project> projects) {
         List<projectPrinted> printedProjects = projects.stream().map(tempProject -> {
