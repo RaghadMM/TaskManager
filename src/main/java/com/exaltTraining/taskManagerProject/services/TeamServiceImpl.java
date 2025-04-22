@@ -1,8 +1,10 @@
 package com.exaltTraining.taskManagerProject.services;
 
+import com.exaltTraining.taskManagerProject.dao.NotificationRepository;
 import com.exaltTraining.taskManagerProject.dao.TeamRepository;
 import com.exaltTraining.taskManagerProject.dao.UserRepository;
 import com.exaltTraining.taskManagerProject.entities.Department;
+import com.exaltTraining.taskManagerProject.entities.Notification;
 import com.exaltTraining.taskManagerProject.entities.Team;
 import com.exaltTraining.taskManagerProject.entities.User;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,12 @@ public class TeamServiceImpl implements TeamService {
 
     private TeamRepository teamRepository;
     private UserRepository userRepository;
+    private NotificationRepository notificationRepository;
 
-    public TeamServiceImpl(TeamRepository teamRepository,UserRepository userRepository) {
+    public TeamServiceImpl(TeamRepository teamRepository,UserRepository userRepository,NotificationRepository notificationRepository) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     //Create a new team by the department manager
@@ -51,6 +55,8 @@ public class TeamServiceImpl implements TeamService {
 
             teamRepository.save(team);
             userRepository.save(user);
+            notificationRepository.save(new Notification("Team leader", "You are assigned as a team leader for "+ team.getName() + "team", false, team.getTeamLeader()));
+
             return true;
 
         }
@@ -73,6 +79,8 @@ public class TeamServiceImpl implements TeamService {
                     if (user.getTeam() == null) {
                         user.setTeam(team);
                         userRepository.save(user);
+                        notificationRepository.save(new Notification("Task Member assignment", "You are assigned as "+ team.getName() + "member", false, user));
+
                         return "The user has been assigned to the team";
 
                     } else {

@@ -14,4 +14,5 @@ public interface TaskService {
     String updateTaskStatus(int taskId, User employee);
     List<Task> searchTasks(String query);
     List<Task> getTasksByStatus(User user,String status);
+    void checkUpcomingDeadlines();
 }

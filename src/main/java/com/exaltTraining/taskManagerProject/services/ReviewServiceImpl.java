@@ -1,7 +1,9 @@
 package com.exaltTraining.taskManagerProject.services;
 
+import com.exaltTraining.taskManagerProject.dao.NotificationRepository;
 import com.exaltTraining.taskManagerProject.dao.ReviewRepository;
 import com.exaltTraining.taskManagerProject.dao.TaskRepository;
+import com.exaltTraining.taskManagerProject.entities.Notification;
 import com.exaltTraining.taskManagerProject.entities.Review;
 import com.exaltTraining.taskManagerProject.entities.Task;
 import com.exaltTraining.taskManagerProject.entities.User;
@@ -12,9 +14,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     private ReviewRepository reviewRepository;
     private TaskRepository taskRepository;
-    public ReviewServiceImpl(ReviewRepository reviewRepository, TaskRepository taskRepository) {
+    private NotificationRepository notificationRepository;
+    public ReviewServiceImpl(ReviewRepository reviewRepository, TaskRepository taskRepository, NotificationRepository notificationRepository) {
         this.reviewRepository = reviewRepository;
         this.taskRepository = taskRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     //Add a review to a task
@@ -34,6 +38,8 @@ public class ReviewServiceImpl implements ReviewService {
                 review.setTask(task);
                 review.setReviewer(reviewer);
                 reviewRepository.save(review);
+
+                notificationRepository.save(new Notification("Task review", "One of your submitted tasks has a review, check for it", false, task.getAssignedUser()));
                 return "Review added";
             }
         }
@@ -53,6 +59,8 @@ public class ReviewServiceImpl implements ReviewService {
         }
         task.setStatus(Task.Status.CHECKED);
         taskRepository.save(task);
+        notificationRepository.save(new Notification("Task checked", "One of your submitted tasks has been checked", false, task.getAssignedUser()));
+
         return "Task Marked";
     }
 }

@@ -1,8 +1,10 @@
 package com.exaltTraining.taskManagerProject.services;
 
 import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
+import com.exaltTraining.taskManagerProject.dao.NotificationRepository;
 import com.exaltTraining.taskManagerProject.dao.UserRepository;
 import com.exaltTraining.taskManagerProject.entities.Department;
+import com.exaltTraining.taskManagerProject.entities.Notification;
 import com.exaltTraining.taskManagerProject.entities.User;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private DepartmentRepository repository;
     private UserRepository userRepository;
+    private NotificationRepository notificationRepository;
 
-    public DepartmentServiceImpl(DepartmentRepository repository, UserRepository userRepository) {
+    public DepartmentServiceImpl(DepartmentRepository repository, UserRepository userRepository, NotificationRepository notificationRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     //Add a new department by the admin
@@ -48,6 +52,9 @@ public class DepartmentServiceImpl implements DepartmentService {
             user.setDepartment(department);
             repository.save(department);
             userRepository.save(user);
+            notificationRepository.save(new Notification("Department Manager Assigned", "You are assigned as a department manager for " +
+                    department.getName() +
+                    "department", false, user));
             return true;
 
         }

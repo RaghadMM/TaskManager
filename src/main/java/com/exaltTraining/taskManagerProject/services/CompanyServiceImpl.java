@@ -2,6 +2,7 @@ package com.exaltTraining.taskManagerProject.services;
 
 import com.exaltTraining.taskManagerProject.dao.CompanyRepository;
 import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
+import com.exaltTraining.taskManagerProject.dao.NotificationRepository;
 import com.exaltTraining.taskManagerProject.entities.Company;
 import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.Email;
@@ -21,9 +22,11 @@ public class CompanyServiceImpl implements CompanyService {
     private CompanyRepository companyRepository;
     private EmailService emailService;
 
+
     public CompanyServiceImpl(CompanyRepository companyRepository, EmailService emailService) {
         this.companyRepository = companyRepository;
         this.emailService = emailService;
+
     }
 
     // Create a company account by the company itself, this account will be bending till admin approval

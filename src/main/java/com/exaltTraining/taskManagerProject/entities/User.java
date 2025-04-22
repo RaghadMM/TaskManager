@@ -51,12 +51,24 @@ public class User {
     @JoinColumn(name="reviewer_id")
     private List<Review> reviews;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    List<Notification> notifications;
+
     public List<Review> getReviews() {
         return reviews;
     }
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public List<Task> getAssignedTasks() {

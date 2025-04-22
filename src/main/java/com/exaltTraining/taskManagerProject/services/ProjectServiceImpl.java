@@ -1,6 +1,7 @@
 package com.exaltTraining.taskManagerProject.services;
 
 import com.exaltTraining.taskManagerProject.dao.DepartmentRepository;
+import com.exaltTraining.taskManagerProject.dao.NotificationRepository;
 import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
 import com.exaltTraining.taskManagerProject.dao.TeamRepository;
 import com.exaltTraining.taskManagerProject.entities.*;
@@ -19,12 +20,14 @@ public class ProjectServiceImpl implements ProjectService {
     private DepartmentRepository departmentRepository;
     private TeamRepository teamRepository;
     private EmailService emailService;
+    private NotificationRepository notificationRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, DepartmentRepository departmentRepository, EmailService emailService,TeamRepository teamRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, DepartmentRepository departmentRepository, EmailService emailService,TeamRepository teamRepository, NotificationRepository notificationRepository) {
         this.projectRepository = projectRepository;
         this.departmentRepository = departmentRepository;
         this.emailService = emailService;
         this.teamRepository = teamRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     //Add a new project by external approved companies
@@ -38,6 +41,7 @@ public class ProjectServiceImpl implements ProjectService {
                 project.setDepartment(department);
                 Boolean available=checkForProjectAvailability(depId,project,company,false);
                 if(available){
+
                     return "Project has been added successfully!";
                 }
                 else{
@@ -143,6 +147,7 @@ public class ProjectServiceImpl implements ProjectService {
                     if(!isDelay){
                         emailService.sendSimpleMail(email);
                     }
+                    notificationRepository.save(new Notification("Project Assignment", "A new project assigned to your team, check for it!", false, team.getTeamLeader()));
                     return true; // Team is free in the given date range
                 }
                 else{
