@@ -1,12 +1,12 @@
 package com.exaltTraining.taskManagerProject.services;
 
-import com.exaltTraining.taskManagerProject.dao.ProjectRepository;
-import com.exaltTraining.taskManagerProject.dao.TaskRepository;
-import com.exaltTraining.taskManagerProject.dao.TeamRepository;
-import com.exaltTraining.taskManagerProject.dao.UserRepository;
+import com.exaltTraining.taskManagerProject.dao.*;
 import com.exaltTraining.taskManagerProject.entities.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -16,12 +16,14 @@ public class TaskServiceImpl implements TaskService {
     private TaskRepository taskRepository;
     private ProjectRepository projectRepository;
     private UserRepository userRepository;
+    private NotificationRepository notificationRepository;
 
-    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository, TeamRepository teamRepository, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository, TeamRepository teamRepository, UserRepository userRepository, NotificationRepository notificationRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     //Add new task to a project
@@ -35,7 +37,9 @@ public class TaskServiceImpl implements TaskService {
                 try{
                     task.setProject(project);
                      taskRepository.save(task);
-                     return "Task added successfully";
+                    notificationRepository.save(new Notification("Task assignment", "One of your team projects has a new assigned task, check for it!", false, tempProject.get().getAssignedTeam().getTeamLeader()));
+
+                    return "Task added successfully";
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -69,6 +73,8 @@ public class TaskServiceImpl implements TaskService {
                             member.setStatus(User.Status.Busy);
                             taskRepository.save(task);
                             userRepository.save(member);
+                            notificationRepository.save(new Notification("Task assignment", "You have a new assigned task, check for it!", false, task.getAssignedUser()));
+
                             return "Task assigned successfully";
                         }
                         else{
@@ -201,6 +207,29 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return returnedTasks;
+    }
+
+    @Override
+    @Scheduled( fixedRate = 2*60*1000)
+    public void checkUpcomingDeadlines() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime oneDayLater = currentTime.plusDays(1);
+
+        List<Task> tasks= taskRepository.getTasksByStatus(Task.Status.IN_PROGRESS);
+        for(Task task : tasks){
+            LocalDateTime deadline = task.getDeadline();
+            if (deadline != null && deadline.isAfter(currentTime) && deadline.isBefore(oneDayLater)) {
+                //check that the notification isn't sent previously
+                List<Notification> sent = notificationRepository.findByTaskTitleAndUser(task.getTitle(), task.getAssignedUser());
+                if(sent.isEmpty()){
+                    notificationRepository.save(new Notification("Task deadline","The deadline for task '" + task.getTitle() + "' is in less than 24 hours.", false, task.getAssignedUser()));
+
+                }
+
+            }
+
+        }
+
     }
 
 }
