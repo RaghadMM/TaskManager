@@ -210,7 +210,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Scheduled( fixedRate = 2*60*1000)
+    @Scheduled( fixedRate = 60*60*1000)
     public void checkUpcomingDeadlines() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime oneDayLater = currentTime.plusDays(1);
