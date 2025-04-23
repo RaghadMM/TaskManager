@@ -25,6 +25,11 @@ public class UserPrinted {
         this.email = email;
     }
 
+    public UserPrinted(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     // Getters and setters
     public int getId() {
         return id;
