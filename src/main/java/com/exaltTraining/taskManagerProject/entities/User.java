@@ -63,6 +63,19 @@ public class User {
     @JoinColumn(name="receiver_id")
     private List<Message> receivedMessages;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="organizer_id")
+    List<Meeting> organizedMeetings;
+
+    @ManyToMany
+    @JoinTable(
+            name = "meeting_participants",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "meeting_id")
+    )
+    private List<Meeting> meetings;
+
+
     public List<Message> getSentMessages() {
         return sentMessages;
     }
@@ -73,6 +86,22 @@ public class User {
 
     public List<Message> getReceivedMessages() {
         return receivedMessages;
+    }
+
+    public List<Meeting> getOrganizedMeetings() {
+        return organizedMeetings;
+    }
+
+    public void setOrganizedMeetings(List<Meeting> organizedMeetings) {
+        this.organizedMeetings = organizedMeetings;
+    }
+
+    public List<Meeting> getMeetings() {
+        return meetings;
+    }
+
+    public void setMeetings(List<Meeting> meetings) {
+        this.meetings = meetings;
     }
 
     public void setReceivedMessages(List<Message> receivedMessages) {
