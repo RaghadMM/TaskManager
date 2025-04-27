@@ -35,7 +35,7 @@ public class TaskServiceImpl implements TaskService {
             Project project = tempProject.get();
             if(project.getCompany().equals(company)){
                 try{
-                    task.setProject(project);
+                     task.setProject(project);
                      taskRepository.save(task);
                     notificationRepository.save(new Notification("Task assignment", "One of your team projects has a new assigned task, check for it!", false, tempProject.get().getAssignedTeam().getTeamLeader()));
 
@@ -115,7 +115,10 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
         }
-        tasks.sort(Comparator.comparing(Task::getDeadline));
+        tasks.sort(Comparator
+                .comparing(Task::getPriority)
+                .thenComparing(Task::getDeadline)
+        );
         return tasks;
     }
 
@@ -230,6 +233,15 @@ public class TaskServiceImpl implements TaskService {
 
         }
 
+    }
+
+    @Override
+    public String taskCount() {
+        String pending = "pending tasks: " + taskRepository.getTasksByStatus(Task.Status.TODO).size() + " tasks \n";
+        String inProcess = "Active tasks: " + taskRepository.getTasksByStatus(Task.Status.IN_PROGRESS).size() + " tasks \n";
+        String finshed = "Finished tasks: " + taskRepository.getTasksByStatus(Task.Status.CHECKED).size() + " tasks\n";
+        return "The total number of tasks is " + taskRepository.count() + " tasks\n"+
+                pending +inProcess +finshed;
     }
 
 }

@@ -15,4 +15,5 @@ public interface TaskService {
     List<Task> searchTasks(String query);
     List<Task> getTasksByStatus(User user,String status);
     void checkUpcomingDeadlines();
+    String taskCount();
 }

@@ -110,4 +110,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departments;
     }
 
+    @Override
+    public String departmentCount() {
+        return "The total number of departments is " + repository.count() + " departments \n";
+    }
+
 }

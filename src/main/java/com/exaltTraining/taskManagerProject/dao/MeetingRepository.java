@@ -2,7 +2,6 @@ package com.exaltTraining.taskManagerProject.dao;
 
 import com.exaltTraining.taskManagerProject.entities.Meeting;
 
-import com.exaltTraining.taskManagerProject.entities.Task;
 import com.exaltTraining.taskManagerProject.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

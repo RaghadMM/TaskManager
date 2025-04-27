@@ -26,6 +26,10 @@ public class Task {
     @Column(name="deadline")
     private LocalDateTime deadline;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority")
+    private Task.Priority priority= Priority.LOW;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="assigned_user_id")
     private User assignedUser;
@@ -41,20 +45,30 @@ public class Task {
     public Task() {
     }
 
-    public Task(int id, String title, String description, Status status, LocalDateTime deadline) {
+    public Task(int id, String title, String description, Status status, LocalDateTime deadline, Task.Priority priority) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
         this.deadline = deadline;
+        this.priority = priority;
     }
 
     public List<Review> getReviews() {
         return reviews;
     }
 
+
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 
     public int getId() {
@@ -119,6 +133,11 @@ public class Task {
         DONE,
         REVIEWED,
         CHECKED
+    }
+    public enum Priority {
+        HIGH,
+        MEDIUM,
+        LOW
     }
 }
 

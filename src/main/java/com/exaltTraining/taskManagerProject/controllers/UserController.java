@@ -5,7 +5,7 @@ import com.exaltTraining.taskManagerProject.config.UserPrinted;
 import com.exaltTraining.taskManagerProject.config.companyPrinted;
 import com.exaltTraining.taskManagerProject.config.taskPrinted;
 import com.exaltTraining.taskManagerProject.entities.*;
-import com.exaltTraining.taskManagerProject.services.UserService;
+import com.exaltTraining.taskManagerProject.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,24 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private UserService userService;
+    private CompanyService companyService;
+    private TaskService taskService;
+    private TeamService teamService;
+    private ProjectService projectService;
+    private DepartmentService departmentService;
+
     @Autowired
     private JwtService jwtService;
 
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, CompanyService companyService, TaskService taskService, TeamService teamService, ProjectService projectService, DepartmentService departmentService) {
         this.userService = userService;
+        this.companyService = companyService;
+        this.taskService = taskService;
+        this.teamService = teamService;
+        this.projectService = projectService;
+        this.departmentService = departmentService;
+
     }
 
     // Create an account for a user by the admin API
@@ -86,6 +98,17 @@ public class UserController {
         List<User> users = userService.searchUsers(query);
 
         return ResponseEntity.ok(printUser(users));
+    }
+
+    @GetMapping("/analyticsDashboard")
+    public String analyticsDashboard(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "Not an admin role";
+        }
+        return userService.userCount() + departmentService.departmentCount() + teamService.teamCount() + projectService.projectCount() + taskService.taskCount() +companyService.companiesCount();
+
     }
 
     // A helper function to form the list of users returned

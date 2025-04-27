@@ -161,4 +161,9 @@ public class CompanyServiceImpl implements CompanyService {
         return companies;
     }
 
+    @Override
+    public String companiesCount() {
+        return "The total number of collaborators is:  " + companyRepository.count() + " companies \n";
+    }
+
 }

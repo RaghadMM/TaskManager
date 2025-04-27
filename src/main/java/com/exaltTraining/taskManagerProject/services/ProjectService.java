@@ -15,6 +15,7 @@ public interface ProjectService {
     List<Project> getTeamProjects(User teamLeader, String status);
     List<Project> searchProjects(String query);
     String changeProjectStatus(int projectId, String status, User teamLeader);
+    String projectCount();
 
 
 }

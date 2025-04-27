@@ -13,4 +13,5 @@ public interface CompanyService {
     List<Company> getApprovedCompanies();
     Boolean deleteCompany(int companyId);
     List<Company> searchCompanies(String query);
+    String companiesCount();
 }
