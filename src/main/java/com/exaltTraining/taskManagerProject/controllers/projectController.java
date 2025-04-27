@@ -69,7 +69,7 @@ public class projectController {
         return tasks.stream().map(task -> {
 
 
-            return new taskPrinted(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), task.getDeadline());
+            return new taskPrinted(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), task.getDeadline(),task.getPriority());
         }).collect(Collectors.toList());
     }
 
@@ -211,7 +211,8 @@ public class projectController {
                             task.getDescription(),
                             task.getTitle(),
                             task.getStatus().toString(),
-                            task.getDeadline()
+                            task.getDeadline(),
+                            task.getPriority()
                     ))
                     .collect(Collectors.toList());
 

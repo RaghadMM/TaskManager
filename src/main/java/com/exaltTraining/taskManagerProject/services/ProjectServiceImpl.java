@@ -298,4 +298,25 @@ public class ProjectServiceImpl implements ProjectService {
             return "Error";
         }
     }
+
+    @Override
+    public String projectCount() {
+        List<Project> projects = projectRepository.findAll();
+        int finished = 0;
+        int inProcess = 0;
+        for (Project project : projects) {
+            if(project.getStatus().equals("finished")){
+                finished++;
+            }
+            else if(project.getStatus().equals("in_process")){
+                inProcess++;
+            }
+        }
+
+        return "The total number of projects is " + projectRepository.count() + " projects\n" +
+                "The active projects :" + inProcess + " projects \n"+
+                "The finished projects :" + finished + " projects \n";
+
+    }
+
 }

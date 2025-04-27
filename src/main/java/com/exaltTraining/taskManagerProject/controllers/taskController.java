@@ -145,7 +145,8 @@ public class taskController {
                         task.getTitle(),
                         task.getDescription(),
                         task.getStatus().toString(),
-                        task.getDeadline()
+                        task.getDeadline(),
+                        task.getPriority()
                 ))
                 .collect(Collectors.toList());
 

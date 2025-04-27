@@ -111,4 +111,11 @@ public class UserServiceImpl implements UserService {
         List<User> users=userRepository.searchUser(query);
         return users;
     }
+
+    @Override
+    public String userCount() {
+        return "The total number of users is " + userRepository.count() + " users \n";
+
+    }
+
 }

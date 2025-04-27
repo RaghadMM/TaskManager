@@ -12,4 +12,6 @@ public interface UserService {
     List<User> getAllUsers();
     String resetPassword(int userId,String email, PasswordResetForm form);
     List<User> searchUsers(String query);
+    String userCount();
+
 }

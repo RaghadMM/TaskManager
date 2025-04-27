@@ -11,4 +11,5 @@ public interface DepartmentService {
    List<Department> getAllDepartments();
    Boolean deleteDepartment(int departmentId);
    List<Department> searchDepartments(String query);
+   String departmentCount();
 }

@@ -1,5 +1,7 @@
 package com.exaltTraining.taskManagerProject.config;
 
+import com.exaltTraining.taskManagerProject.entities.Task;
+
 import java.time.LocalDateTime;
 //Helper class used to specify the form of returning task
 public class taskPrinted {
@@ -8,13 +10,23 @@ public class taskPrinted {
     private String taskDescription;
     private String taskStatus;
     private LocalDateTime taskDeadline;
+    private Task.Priority priority;
 
-    public taskPrinted(int taskId, String taskName, String taskDescription, String taskStatus, LocalDateTime taskDeadline) {
+    public taskPrinted(int taskId, String taskName, String taskDescription, String taskStatus, LocalDateTime taskDeadline, Task.Priority priority) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
         this.taskDeadline = taskDeadline;
+        this.priority = priority;
+    }
+
+    public Task.Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Task.Priority priority) {
+        this.priority = priority;
     }
 
     public int getTaskId() {

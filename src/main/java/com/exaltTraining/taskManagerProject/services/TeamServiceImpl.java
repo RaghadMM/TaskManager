@@ -161,4 +161,9 @@ public class TeamServiceImpl implements TeamService {
         List<Team> teams=teamRepository.searchTeams(query);
         return teams;
     }
+
+    @Override
+    public String teamCount() {
+        return "The total number of teams is " + teamRepository.count() + " teams \n";
+    }
 }

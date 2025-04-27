@@ -15,5 +15,6 @@ public interface TeamService {
     Team getTeam(int teamId);
     List<User> getAvailableTeamMembers(User teamLeader);
     List<Team> searchTeams(String query);
+    String teamCount();
 
 }
