@@ -47,15 +47,19 @@ public class DepartmentServiceImpl implements DepartmentService {
             User user = tempUser.get();
             Department department = tempDepartment.get();
 
-            department.setManager(user);
-            user.setRole(User.Role.DEPARTMENT_MANAGER);
-            user.setDepartment(department);
-            repository.save(department);
-            userRepository.save(user);
-            notificationRepository.save(new Notification("Department Manager Assigned", "You are assigned as a department manager for " +
-                    department.getName() +
-                    "department", false, user));
-            return true;
+            if(department.getManager()==null && user.getRole()!= User.Role.DEPARTMENT_MANAGER)
+            {
+                department.setManager(user);
+                user.setRole(User.Role.DEPARTMENT_MANAGER);
+                user.setDepartment(department);
+                repository.save(department);
+                userRepository.save(user);
+                notificationRepository.save(new Notification("Department Manager Assigned", "You are assigned as a department manager for " +
+                        department.getName() +
+                        "department", false, user));
+                return true;
+            }
+
 
         }
         return false;
@@ -86,7 +90,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     //Get all company departments
     @Override
     public List<Department> getAllDepartments() {
-        return repository.findAll();
+        try{
+            return repository.findAll();
+        }
+        catch (Exception e) {
+            return null;
+        }
+
     }
 
     //Delete a department
@@ -94,6 +104,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Boolean deleteDepartment(int departmentId) {
         try{
+            Department department = repository.findById(departmentId).get();
+            if(department.equals(null)){
+                return false;
+            }
             repository.deleteById(departmentId);
             return true;
         }

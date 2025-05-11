@@ -6,6 +6,7 @@ import com.exaltTraining.taskManagerProject.entities.Company;
 import com.exaltTraining.taskManagerProject.entities.LoginRequest;
 import com.exaltTraining.taskManagerProject.services.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,7 @@ public class companyController {
             return "Company approved successfully";
         }
         else {
-            return "Company not approved";
+            return "Error approving company";
         }
 
     }
@@ -125,7 +126,8 @@ public class companyController {
         String token = authHeader.substring(7);
         String role = jwtService.extractUserRole(token);
         if (!"admin".equalsIgnoreCase(role)) {
-            return null;
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // or UNAUTHORIZED
+
         }
         List<Company> companies = companyService.searchCompanies(query);
         return ResponseEntity.ok(printCompanies(companies));

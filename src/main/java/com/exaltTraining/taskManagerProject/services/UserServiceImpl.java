@@ -23,9 +23,10 @@ public class UserServiceImpl implements UserService {
 
 
 
-    public UserServiceImpl(UserRepository userRepository, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, EmailService emailService,BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
     // Create an account for a user by the admin
     //The user receives email includes the password
@@ -57,14 +58,7 @@ public class UserServiceImpl implements UserService {
     //Helper function to get a user by his email
     @Override
     public User findUserByEmail(String email) {
-        List<User> users=userRepository.findAll();
-        for(User user:users) {
-            if(user.getEmail().equals(email)) {
-                return user;
-            }
-
-        }
-        return null;
+        return userRepository.findUserByEmail(email);
     }
     //Get all users in the system
     @Override
@@ -103,7 +97,7 @@ public class UserServiceImpl implements UserService {
                 return "Unauthorized user";
             }
         }
-        return "Unauthorized user";
+        return "User not found";
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.exaltTraining.taskManagerProject.entities.*;
 import com.exaltTraining.taskManagerProject.services.TeamService;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,15 +37,14 @@ public class teamController {
         // Extract role from token using JwtService
         String role = jwtService.extractUserRole(token);
         String username = jwtService.extractUsername(token);
-        User user = userService.findUserByEmail(username);
-        Department department=user.getDepartment();
-        System.out.println(username);
-        System.out.println("dep "+department);
-
         // Check if user is a department manager
         if (!"department_manager".equalsIgnoreCase(role)) {
             return "Unauthorized: Only department managers can add teams.";
         }
+        User user = userService.findUserByEmail(username);
+        Department department=user.getDepartment();
+        System.out.println(username);
+        System.out.println("dep "+department);
         Team newTeam = teamService.createTeam(team,department);
         if (newTeam != null) {
             return "Team created successfully";
@@ -101,8 +101,16 @@ public class teamController {
 
     //Get all teams API
     @GetMapping("/teams")
-    public List<teamPrinted> getAllTeams() {
-        List<Team> teams = teamService.getAllTeams();
+    public List<teamPrinted> getAllTeams(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String username = jwtService.extractUsername(token);
+        User user = userService.findUserByEmail(username);
+        Department department=user.getDepartment();
+        if(!"department_manager".equalsIgnoreCase(role)) {
+            return null;
+        }
+        List<Team> teams = teamService.getAllTeams(department);
         return printTeam(teams);
 
     }
@@ -185,7 +193,8 @@ public class teamController {
         String token = authHeader.substring(7);
         String role = jwtService.extractUserRole(token);
         if (!"admin".equalsIgnoreCase(role)) {
-            return null;
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // or UNAUTHORIZED
+
         }
         List<Team> teams = teamService.searchTeams(query);
 

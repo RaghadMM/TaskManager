@@ -7,6 +7,7 @@ import com.exaltTraining.taskManagerProject.config.taskPrinted;
 import com.exaltTraining.taskManagerProject.entities.*;
 import com.exaltTraining.taskManagerProject.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +29,14 @@ public class UserController {
     private JwtService jwtService;
 
 
-    public UserController(UserService userService, CompanyService companyService, TaskService taskService, TeamService teamService, ProjectService projectService, DepartmentService departmentService) {
+    public UserController(UserService userService, CompanyService companyService, TaskService taskService, TeamService teamService, ProjectService projectService, DepartmentService departmentService,JwtService jwtService) {
         this.userService = userService;
         this.companyService = companyService;
         this.taskService = taskService;
         this.teamService = teamService;
         this.projectService = projectService;
         this.departmentService = departmentService;
+        this.jwtService = jwtService;
 
     }
 
@@ -48,13 +50,19 @@ public class UserController {
             if (!"admin".equalsIgnoreCase(role)) {
                 return "Unauthorized: Only admin can register users.";
             }
-            userService.registerUser(user);
+            User newUser =userService.registerUser(user);
+            System.out.println(newUser);
+            if (newUser != null) {
+                return "User registered successfully";
+            }
+            else {
+                return "User could not be registered";
+            }
         }
         catch(Exception e){
             e.printStackTrace();
             return "Error creating user: check for email validation ";
         }
-        return "User registered successfully";
     }
 
     //Log in for the users API
@@ -63,6 +71,7 @@ public class UserController {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
         User authenticatedUser =userService.login(email,password);
+        System.out.println(authenticatedUser);
         if(authenticatedUser != null){
             String token = jwtService.generateToken(email,authenticatedUser.getRole().toString());
             return "User logged in successfully \n Here is the token: " + token;
@@ -78,7 +87,6 @@ public class UserController {
         List <User> users= userService.getAllUsers();
         return printUser(users);
     }
-
     //Reset password API
     @PutMapping("/passwordReset/{userId}")
     public String changePassword(@PathVariable int userId, @RequestBody PasswordResetForm form, @RequestHeader("Authorization") String authHeader) {
@@ -93,8 +101,9 @@ public class UserController {
         String token = authHeader.substring(7);
         String role = jwtService.extractUserRole(token);
         if (!"admin".equalsIgnoreCase(role)) {
-            return null;
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // or UNAUTHORIZED
         }
+
         List<User> users = userService.searchUsers(query);
 
         return ResponseEntity.ok(printUser(users));

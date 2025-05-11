@@ -58,16 +58,19 @@ public class ProjectServiceImpl implements ProjectService {
 
     //Get project related tasks
     @Override
-    public List<Task> getProjectTasks(int depId) {
+    public List<Task> getProjectTasks(int depId, Company company) {
         Optional<Project> tempProject= projectRepository.findById(depId);
         if(tempProject.isPresent()){
-            List<Task> tasks=tempProject.get().getTasks();
-            if(tasks.size()>0){
-                return tasks;
+            if(tempProject.get().getCompany().equals(company)){
+                List<Task> tasks=tempProject.get().getTasks();
+                if(tasks!=null){
+                    return tasks;
+                }
+                else{
+                    return null;
+                }
             }
-            else{
-                return null;
-            }
+
         }
         return null;
 
@@ -238,6 +241,9 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> getTeamProjects(User teamLeader, String status) {
 
         Team team = teamRepository.findTeamByTeamLeader(teamLeader);
+        if(team==null){
+            return null;
+        }
         List<Project> projects = new ArrayList<>();
         for (Project project : team.getProjects()) {
             if (project.getStatus().equals(status)) {
