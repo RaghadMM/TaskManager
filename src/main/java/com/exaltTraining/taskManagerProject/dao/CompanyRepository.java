@@ -13,4 +13,6 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
             "c.name LIKE CONCAT('%',:query, '%')" +
             "Or c.email LIKE CONCAT('%', :query, '%')")
     List<Company> searchCompanies(String query);
+
+    Company findCompanyByEmail(String mail);
 }

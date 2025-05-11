@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +24,10 @@ public class CompanyServiceImpl implements CompanyService {
     private EmailService emailService;
 
 
-    public CompanyServiceImpl(CompanyRepository companyRepository, EmailService emailService) {
+    public CompanyServiceImpl(CompanyRepository companyRepository, EmailService emailService,BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.companyRepository = companyRepository;
         this.emailService = emailService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 
     }
 
@@ -33,7 +35,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company createCompanyAccount(Company company) {
         try{
-            System.out.println(company.getPassword());
+
             company.setPassword(bCryptPasswordEncoder.encode(company.getPassword()));
             return companyRepository.save(company);
         }
@@ -61,10 +63,16 @@ public class CompanyServiceImpl implements CompanyService {
                         "Welcome aboard!\n\n" +
                         "Best regards,\nTask Manager Team";
 
-                Email email = new Email(company.getEmail(), body, "Request Approved — Welcome Aboard!");
-                String result =emailService.sendSimpleMail(email);
-                System.out.println(result);
-                return true;
+                try {
+                    Email email = new Email(company.getEmail(), body, "Request Approved — Welcome Aboard!");
+                    String result =emailService.sendSimpleMail(email);
+                    System.out.println(result);
+                    return true;
+                }
+                catch(Exception e){
+                    return false;
+                }
+
             }
             else if(decision.equals("reject")){
                 company.setApproved(false);
@@ -79,8 +87,10 @@ public class CompanyServiceImpl implements CompanyService {
                 Email email = new Email(company.getEmail(), body, "Collaboration Request Update");
                 String result =emailService.sendSimpleMail(email);
                 System.out.println(result);
-                return false;
+                return true;
             }
+            else return false;
+
         }
         return false;
     }

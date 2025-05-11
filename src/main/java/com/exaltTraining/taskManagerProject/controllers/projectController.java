@@ -6,6 +6,7 @@ import com.exaltTraining.taskManagerProject.services.CompanyService;
 import com.exaltTraining.taskManagerProject.services.ProjectService;
 import com.exaltTraining.taskManagerProject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,8 +64,20 @@ public class projectController {
     }
     //Get project tasks API
     @GetMapping("/projectTasks/{projectId}")
-    public List<taskPrinted> getProjectTasks(@PathVariable int projectId){
-        List<Task> tasks = projectService.getProjectTasks(projectId);
+    public List<taskPrinted> getProjectTasks(@PathVariable int projectId, @RequestHeader("Authorization") String authHeader){
+
+        String token = authHeader.substring(7);
+        String role = jwtService.extractUserRole(token);
+        String companyEmail=jwtService.extractUsername(token);
+        Company company = companyService.findCompanyByEmail(companyEmail);
+
+        if(!"company".equalsIgnoreCase(role)) {
+            return null;
+        }
+        if(!company.getApproved()){
+            return null;
+        }
+        List<Task> tasks = projectService.getProjectTasks(projectId, company);
 
         return tasks.stream().map(task -> {
 
@@ -115,8 +128,7 @@ public class projectController {
         if (!"company".equalsIgnoreCase(role)) {
             return "Unauthorized: Only Companies accounts can cancel projects.";
         }
-        String result=projectService.cancelOrDelayProject(projectId,decision,company);
-        return result;
+        return projectService.cancelOrDelayProject(projectId,decision,company);
     }
 
     //To get all company's pending projects
@@ -168,7 +180,7 @@ public class projectController {
         String token = authHeader.substring(7);
         String role = jwtService.extractUserRole(token);
         if (!"admin".equalsIgnoreCase(role)) {
-            return null;
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // or UNAUTHORIZED
         }
         List<Project> projects = projectService.searchProjects(query);
 

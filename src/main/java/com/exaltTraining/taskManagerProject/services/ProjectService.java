@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ProjectService {
     String addProject(Project project,int depId,Company company);
-    List<Task> getProjectTasks(int depId);
+    List<Task> getProjectTasks(int depId, Company company);
     List<Project> getPendingProjects();
     //String approveProject(int projectId);
     Boolean checkForProjectAvailability(int departmentId, Project project, Company company,Boolean isDelay);

@@ -9,6 +9,7 @@ import com.exaltTraining.taskManagerProject.entities.Department;
 import com.exaltTraining.taskManagerProject.entities.User;
 import com.exaltTraining.taskManagerProject.services.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -123,7 +124,8 @@ public class departmentController {
         String token = authHeader.substring(7);
         String role = jwtService.extractUserRole(token);
         if (!"admin".equalsIgnoreCase(role)) {
-            return null;
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // or UNAUTHORIZED
+
         }
         List<Department> departments = departmentService.searchDepartments(query);
         return ResponseEntity.ok(printDepartments(departments));
